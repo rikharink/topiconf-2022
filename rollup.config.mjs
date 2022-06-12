@@ -68,7 +68,7 @@ export default defineConfig({
   },
   plugins: [
     html2({
-      title: 'JS13K 2022',
+      title: 'TopiConf 2022',
       template: join('src', 'index.html'),
       minify: false,
       externals: {

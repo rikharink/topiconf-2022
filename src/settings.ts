@@ -9,7 +9,7 @@ export const defaultRendererSettings: RendererSettings = {
   clearMask: GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT,
   supportHiDpi: false,
   resizeToScreen: false,
-  resolution: [1920, 1080],
+  resolution: [1280, 720],
   antialias: true,
 };
 
