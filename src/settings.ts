@@ -11,6 +11,8 @@ export const defaultRendererSettings: RendererSettings = {
   resizeToScreen: false,
   resolution: [1280, 720],
   antialias: true,
+  textColor: [0, 0, 0, 1],
+  haloColor: [1, 1, 1, 1],
 };
 
 let settings = {

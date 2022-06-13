@@ -1,6 +1,8 @@
-import { NormalizedRgbaColor, Resolution } from '../types';
+import { NormalizedRgbaColor, Resolution, RgbaColor } from '../types';
 
 export interface RendererSettings {
+  textColor: NormalizedRgbaColor;
+  haloColor: NormalizedRgbaColor;
   clearColor: NormalizedRgbaColor;
   clearMask: number;
   resolution: Resolution;

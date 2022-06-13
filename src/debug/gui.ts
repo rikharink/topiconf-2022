@@ -33,9 +33,9 @@ async function showDebugGUI() {
     settings.rendererSettings.resizeToScreen,
   );
   renderingControls.addColor(settings.rendererSettings, 'clearColor');
-
-  let stateControls = controls.addFolder('state');
-  const text = stateControls.add(state, 'text');
+  renderingControls.addColor(settings.rendererSettings, 'textColor');
+  renderingControls.addColor(settings.rendererSettings, 'haloColor');
+  const text = renderingControls.add(state, 'text');
   text.onChange(function () {
     state.game!.renderer.text_renderer.text = state.text;
   });

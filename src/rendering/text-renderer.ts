@@ -32,7 +32,7 @@ import vert from './text.vert.glsl';
 import frag from './text.frag.glsl';
 
 import { initShaderProgram, Shader } from './gl-util';
-import { create, multiply, ortho } from '../math/matrix4x4';
+import { create, Matrix4x4, multiply, ortho } from '../math/matrix4x4';
 import {
   GL_ARRAY_BUFFER,
   GL_BLEND,
@@ -53,8 +53,11 @@ import {
   GL_TEXTURE_WRAP_T,
   GL_TRIANGLES,
 } from './gl-constants';
+import settings from '../settings';
 
 const INF = 1e20;
+const SUPPORTED_CHARS: string =
+  'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-=_+[]{}\\|;:\'",.<>/?`~ ';
 
 interface Glyph {
   data: Uint8ClampedArray;
@@ -75,38 +78,45 @@ interface TinySDFOptions {
   fontFamily: string;
   fontWeight: string | number;
   fontStyle: string;
-  gamma: number;
-  scale: number;
 }
 
 type SDFDictionary = { [id: string]: { x: number; y: number } };
 type Buffer = { numItems?: number };
 
-export default class TinySDF {
-  buffer: number;
-  cutoff: number;
-  radius: number;
-  size: number;
-  ctx: CanvasRenderingContext2D;
-  glyphCtx: CanvasRenderingContext2D;
-  gridOuter: Float64Array;
-  gridInner: Float64Array;
-  f: Float64Array;
-  z: Float64Array;
-  v: Uint16Array;
-  chars: string =
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-=_+[]{}\\|;:\'",.<>/?`~ ';
-  sdfs: SDFDictionary = {};
-  gl: WebGL2RenderingContext;
+export class TextRenderer {
+  private gl: WebGL2RenderingContext;
+  private tinySdf: TinySDF;
+
   private _shader: Shader;
   private _vertexBuffer: WebGLBuffer & Buffer;
   private _textureBuffer: WebGLBuffer & Buffer;
   private _text?: string;
   private _dirty: boolean = true;
-  pMatrix: import('/home/rik/repos/topicus/topiconf-2022/src/math/matrix4x4').Matrix4x4;
-  texture: WebGLTexture;
-  gamma: number;
-  scale: number;
+  private _pMatrix: Matrix4x4;
+  private _texture: WebGLTexture;
+
+  private _gamma: number;
+  private _buffer: number;
+  private _scale: number;
+
+  public constructor(
+    gl: WebGL2RenderingContext,
+    { gamma = 2, buffer = 3, scale = 128 } = {},
+  ) {
+    this.gl = gl;
+    this.tinySdf = new TinySDF();
+
+    this._shader = initShaderProgram(gl, vert, frag)!;
+    this._vertexBuffer = gl.createBuffer()!;
+    this._textureBuffer = gl.createBuffer()!;
+    this._text = '';
+    this._pMatrix = create();
+    this._texture = gl.createTexture()!;
+
+    this._gamma = gamma;
+    this._buffer = buffer;
+    this._scale = scale;
+  }
 
   public get text(): string | undefined {
     return this._text;
@@ -115,66 +125,6 @@ export default class TinySDF {
   public set text(value: string | undefined) {
     this._text = value;
     this._dirty = true;
-  }
-
-  constructor(
-    gl: WebGL2RenderingContext,
-    {
-      fontSize = 24,
-      buffer = 3,
-      radius = 8,
-      cutoff = 0.25,
-      fontFamily = 'sans-serif',
-      fontWeight = 'normal',
-      fontStyle = 'normal',
-      gamma = 1,
-      scale = 16,
-    }: Partial<TinySDFOptions> = {},
-  ) {
-    this.buffer = buffer;
-    this.cutoff = cutoff;
-    this.radius = radius;
-    this.gamma = gamma;
-    this.scale = scale;
-    this.gl = gl;
-
-    // make the canvas size big enough to both have the specified buffer around the glyph
-    // for "halo", and account for some glyphs possibly being larger than their font size
-    const size = (this.size = fontSize + buffer * 4);
-
-    const canvas = this._createCanvas(size);
-    const glyphCtx = (this.glyphCtx = canvas.getContext('2d', {
-      willReadFrequently: true,
-    })!);
-    glyphCtx.font = `${fontStyle} ${fontWeight} ${fontSize}px ${fontFamily}`;
-
-    glyphCtx.textBaseline = 'alphabetic';
-    glyphCtx.textAlign = 'left'; // Necessary so that RTL text doesn't have different alignment
-    glyphCtx.fillStyle = 'black';
-
-    
-    const canvas2 = document.createElement('canvas');
-    const totalWidth = glyphCtx.canvas.width * this.chars.length;
-    const rows = Math.ceil(totalWidth / gl.canvas.width);
-    canvas2.width = gl.canvas.width;
-    canvas2.height = glyphCtx.canvas.height * rows;
-    this.ctx = canvas2.getContext('2d')!;
-
-    // temporary arrays for the distance transform
-    this.gridOuter = new Float64Array(size * size);
-    this.gridInner = new Float64Array(size * size);
-    this.f = new Float64Array(size);
-    this.z = new Float64Array(size + 1);
-    this.v = new Uint16Array(size);
-
-    this._updateSDF();
-
-    this._shader = initShaderProgram(gl, vert, frag)!;
-    this.pMatrix = create();
-    this.texture = gl.createTexture()!;
-    ortho(this.pMatrix, 0, gl.canvas.width, gl.canvas.height, 0, 0, -1);
-    this._textureBuffer = gl.createBuffer()!;
-    this._vertexBuffer = gl.createBuffer()!;
   }
 
   private _drawText(size: number) {
@@ -192,17 +142,17 @@ export default class TinySDF {
     const bx = 0;
     const by = fontsize / 2 + buf;
     const advance = fontsize;
-    const scale = this.size / fontsize;
+    const scale = size / fontsize;
     const lineWidth = this.text.length * fontsize * scale;
 
     const pen = {
-      x: 0,
-      y: 0,
+      x: this.gl.canvas.width / 2 - lineWidth / 2,
+      y: this.gl.canvas.height / 2,
     };
 
     for (let i = 0; i < this.text.length; i++) {
-      const posX = this.sdfs[this.text[i]].x;
-      const posY = this.sdfs[this.text[i]].y;
+      const posX = this.tinySdf.sdfs[this.text[i]].x;
+      const posY = this.tinySdf.sdfs[this.text[i]].y;
 
       vertexElements.push(
         pen.x + (bx - buf) * scale,
@@ -270,20 +220,20 @@ export default class TinySDF {
     this.gl.enableVertexAttribArray(this._shader.a_pos);
     this.gl.enableVertexAttribArray(this._shader.a_texcoord);
     const sdfData = new Uint8Array(
-      this.ctx.getImageData(
+      this.tinySdf.ctx.getImageData(
         0,
         0,
-        this.ctx.canvas.width,
-        this.ctx.canvas.height,
+        this.tinySdf.ctx.canvas.width,
+        this.tinySdf.ctx.canvas.height,
       ).data,
     );
-    this.gl.bindTexture(GL_TEXTURE_2D, this.texture);
+    this.gl.bindTexture(GL_TEXTURE_2D, this._texture);
     this.gl.texImage2D(
       GL_TEXTURE_2D,
       0,
       GL_RGBA,
-      this.ctx.canvas.width,
-      this.ctx.canvas.height,
+      this.tinySdf.ctx.canvas.width,
+      this.tinySdf.ctx.canvas.height,
       0,
       GL_RGBA,
       GL_DATA_UNSIGNED_BYTE,
@@ -301,16 +251,16 @@ export default class TinySDF {
 
     if (this._dirty) {
       console.log('draw text');
-      this._drawText(this.scale);
+      this._drawText(this._scale);
       this._dirty = false;
     }
     const mvMatrix = create();
     //TODO: rotation from center
     const mvpMatrix = create();
-    multiply(mvpMatrix, this.pMatrix, mvMatrix);
+    multiply(mvpMatrix, this._pMatrix, mvMatrix);
 
     this.gl.activeTexture(GL_TEXTURE0);
-    this.gl.bindTexture(GL_TEXTURE_2D, this.texture);
+    this.gl.bindTexture(GL_TEXTURE_2D, this._texture);
     this.gl.uniform1i(this._shader.u_texture, 0);
 
     this.gl.bindBuffer(GL_ARRAY_BUFFER, this._vertexBuffer);
@@ -333,14 +283,84 @@ export default class TinySDF {
       0,
     );
 
-    this.gl.uniform4fv(this._shader.u_color, [1, 1, 1, 1]);
-    this.gl.uniform1f(this._shader.u_buffer, this.buffer);
+    this.gl.uniform4fv(
+      this._shader.u_color,
+      settings.rendererSettings.haloColor,
+    );
+    this.gl.uniform1f(this._shader.u_buffer, this._buffer);
     this.gl.drawArrays(GL_TRIANGLES, 0, this._vertexBuffer.numItems!);
 
-    this.gl.uniform4fv(this._shader.u_color, [0, 0, 0, 1]);
+    this.gl.uniform4fv(
+      this._shader.u_color,
+      settings.rendererSettings.textColor,
+    );
     this.gl.uniform1f(this._shader.u_buffer, 0.75);
-    this.gl.uniform1f(this._shader.u_gamma, (this.gamma * 1.4142) / this.scale);
+    this.gl.uniform1f(
+      this._shader.u_gamma,
+      (this._gamma * 1.4142) / this._scale,
+    );
     this.gl.drawArrays(GL_TRIANGLES, 0, this._vertexBuffer.numItems!);
+  }
+}
+
+class TinySDF {
+  private _buffer: number;
+  private _cutoff: number;
+  private _radius: number;
+  private _size: number;
+  private _gridOuter: Float64Array;
+  private _gridInner: Float64Array;
+  private _f: Float64Array;
+  private _z: Float64Array;
+  private _v: Uint16Array;
+  private _glyphCtx: CanvasRenderingContext2D;
+
+  public ctx: CanvasRenderingContext2D;
+  public sdfs: SDFDictionary = {};
+
+  constructor({
+    fontSize = 24,
+    buffer = 3,
+    radius = 8,
+    cutoff = 0.25,
+    fontFamily = 'sans-serif',
+    fontWeight = 'normal',
+    fontStyle = 'normal',
+  }: Partial<TinySDFOptions> = {}) {
+    this._buffer = buffer;
+    this._cutoff = cutoff;
+    this._radius = radius;
+
+    // make the canvas size big enough to both have the specified buffer around the glyph
+    // for "halo", and account for some glyphs possibly being larger than their font size
+    const size = (this._size = fontSize + buffer * 4);
+
+    const canvas = this._createCanvas(size);
+    const glyphCtx = (this._glyphCtx = canvas.getContext('2d', {
+      willReadFrequently: true,
+    })!);
+    glyphCtx.font = `${fontStyle} ${fontWeight} ${fontSize}px ${fontFamily}`;
+    glyphCtx.textBaseline = 'alphabetic';
+    glyphCtx.textAlign = 'left'; // Necessary so that RTL text doesn't have different alignment
+    glyphCtx.fillStyle = 'black';
+
+    const canvas2 = document.createElement('canvas');
+    const totalWidth = glyphCtx.canvas.width * SUPPORTED_CHARS.length;
+    const rows = Math.ceil(
+      totalWidth / settings.rendererSettings.resolution[0],
+    );
+    canvas2.width = settings.rendererSettings.resolution[0];
+    canvas2.height = glyphCtx.canvas.height * rows;
+    this.ctx = canvas2.getContext('2d')!;
+
+    // temporary arrays for the distance transform
+    this._gridOuter = new Float64Array(size * size);
+    this._gridInner = new Float64Array(size * size);
+    this._f = new Float64Array(size);
+    this._z = new Float64Array(size + 1);
+    this._v = new Uint16Array(size);
+
+    this._updateSDF();
   }
 
   private _createCanvas(size: number): HTMLCanvasElement {
@@ -354,7 +374,7 @@ export default class TinySDF {
     width: number,
     height: number,
   ): ImageData {
-    const imageData = this.glyphCtx.createImageData(width, height);
+    const imageData = this._glyphCtx.createImageData(width, height);
     for (let i = 0; i < alphaChannel.length; i++) {
       imageData.data[4 * i + 0] = alphaChannel[i];
       imageData.data[4 * i + 1] = alphaChannel[i];
@@ -369,34 +389,34 @@ export default class TinySDF {
     let i = 0;
     for (
       let y = 0;
-      y + this.size <= this.ctx.canvas.height && i < this.chars.length;
-      y += this.size
+      y + this._size <= this.ctx.canvas.height && i < SUPPORTED_CHARS.length;
+      y += this._size
     ) {
       for (
         let x = 0;
-        x + this.size <= this.ctx.canvas.width && i < this.chars.length;
-        x += this.size
+        x + this._size <= this.ctx.canvas.width && i < SUPPORTED_CHARS.length;
+        x += this._size
       ) {
-        const { data, width, height } = this._draw(this.chars[i]);
+        const { data, width, height } = this.drawGlyph(SUPPORTED_CHARS[i]);
         this.ctx.putImageData(
           this._makeRGBAImageData(data, width, height),
           x,
           y,
         );
-        this.sdfs[this.chars[i]] = { x, y };
+        this.sdfs[SUPPORTED_CHARS[i]] = { x, y };
         i++;
       }
     }
   }
 
-  private _draw(char: string): Glyph {
+  public drawGlyph(char: string): Glyph {
     const {
       width: glyphAdvance,
       actualBoundingBoxAscent,
       actualBoundingBoxDescent,
       actualBoundingBoxLeft,
       actualBoundingBoxRight,
-    } = this.glyphCtx.measureText(char);
+    } = this._glyphCtx.measureText(char);
 
     // The integer/pixel part of the top alignment is encoded in metrics.glyphTop
     // The remainder is implicitly encoded in the rasterization
@@ -405,16 +425,16 @@ export default class TinySDF {
 
     // If the glyph overflows the canvas size, it will be clipped at the bottom/right
     const glyphWidth = Math.min(
-      this.size - this.buffer,
+      this._size - this._buffer,
       Math.ceil(actualBoundingBoxRight - actualBoundingBoxLeft),
     );
     const glyphHeight = Math.min(
-      this.size - this.buffer,
+      this._size - this._buffer,
       glyphTop + Math.ceil(actualBoundingBoxDescent),
     );
 
-    const width = glyphWidth + 2 * this.buffer;
-    const height = glyphHeight + 2 * this.buffer;
+    const width = glyphWidth + 2 * this._buffer;
+    const height = glyphHeight + 2 * this._buffer;
 
     const len = Math.max(width * height, 0);
     const data = new Uint8ClampedArray(len);
@@ -430,7 +450,12 @@ export default class TinySDF {
     };
     if (glyphWidth === 0 || glyphHeight === 0) return glyph;
 
-    const { glyphCtx: ctx, buffer, gridInner, gridOuter } = this;
+    const {
+      _glyphCtx: ctx,
+      _buffer: buffer,
+      _gridInner: gridInner,
+      _gridOuter: gridOuter,
+    } = this;
     ctx.clearRect(buffer, buffer, glyphWidth, glyphHeight);
     ctx.fillText(char, buffer, buffer + glyphTop);
     const imgData = ctx.getImageData(buffer, buffer, glyphWidth, glyphHeight);
@@ -459,7 +484,7 @@ export default class TinySDF {
       }
     }
 
-    edt(gridOuter, 0, 0, width, height, width, this.f, this.v, this.z);
+    edt(gridOuter, 0, 0, width, height, width, this._f, this._v, this._z);
     edt(
       gridInner,
       buffer,
@@ -467,14 +492,14 @@ export default class TinySDF {
       glyphWidth,
       glyphHeight,
       width,
-      this.f,
-      this.v,
-      this.z,
+      this._f,
+      this._v,
+      this._z,
     );
 
     for (let i = 0; i < len; i++) {
       const d = Math.sqrt(gridOuter[i]) - Math.sqrt(gridInner[i]);
-      data[i] = Math.round(255 - 255 * (d / this.radius + this.cutoff));
+      data[i] = Math.round(255 - 255 * (d / this._radius + this._cutoff));
     }
 
     return glyph;
