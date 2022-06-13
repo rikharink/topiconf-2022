@@ -10,12 +10,12 @@ export const defaultTextRendererOptions: TextRendererSettings = {
   halo: 0.75,
   angle: 0,
   gamma: 2,
-  textColor: [0, 0, 0, 1],
-  haloColor: [1, 0, 0, 1],
+  textColor: [1, 1, 1, 1],
+  haloColor: [1, 1, 0, 1],
 };
 
 export const defaultRendererSettings: RendererSettings = {
-  clearColor: [1, 1, 1, 1],
+  clearColor: [0, 0, 0, 1],
   clearMask: GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT,
   supportHiDpi: false,
   resizeToScreen: false,

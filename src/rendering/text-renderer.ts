@@ -124,7 +124,7 @@ export class TextRenderer {
 
   public constructor(gl: WebGL2RenderingContext) {
     this.gl = gl;
-    this.tinySdf = new TinySDF();
+    this.tinySdf = new TinySDF({ fontFamily: 'Cascadia Mono, monospace' });
 
     this._shader = initShaderProgram(gl, vert, frag)!;
     this._vertexBuffer = gl.createBuffer()!;
@@ -169,12 +169,14 @@ export class TextRenderer {
 
     const lines = this.text.split('\n');
 
-    const base = this.tinySdf.sdfs['A'];
+    const base = this.tinySdf.sdfs['H'];
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
-      const lineWidth =
-        line.length * this.tinySdf.sdfs[' '].glyphAdvance * scale;
+      const lineWidth = line
+        .split('')
+        .reduce((acc, c) => acc + this.tinySdf.sdfs[c].glyphAdvance * scale, 0);
+
       const pen = {
         x: this.gl.canvas.width * 0.5 - lineWidth * 0.5,
         y: this.gl.canvas.height / 2 + i * fontsize * scale,
@@ -184,14 +186,17 @@ export class TextRenderer {
         if (char === '\n') {
           break;
         }
-        const info = this.tinySdf.sdfs[char];
+        const current = this.tinySdf.sdfs[char];
 
         if (char === ' ') {
-          pen.x = pen.x + info.glyphAdvance * scale;
+          pen.x = pen.x + current.glyphAdvance * scale;
           continue;
         }
-
-        const diff = (base.glyphTop - info.glyphTop) * 2;
+        console.log('character', char);
+        console.log('base', base.glyphTop, base.glyphHeight);
+        console.log('current', current.glyphTop, current.glyphHeight);
+        console.log('---');
+        const diff = base.glyphHeight - current.glyphHeight;
         pen.y += diff;
         const posX = this.tinySdf.sdfs[char].x;
         const posY = this.tinySdf.sdfs[char].y;
@@ -227,7 +232,7 @@ export class TextRenderer {
           posX + width,
           posY + height,
         );
-        pen.x = pen.x + info.glyphAdvance * scale;
+        pen.x = pen.x + current.glyphAdvance * scale;
       }
     }
 
