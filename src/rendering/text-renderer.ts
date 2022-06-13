@@ -196,7 +196,7 @@ export class TextRenderer {
         console.log('base', base.glyphTop, base.glyphHeight);
         console.log('current', current.glyphTop, current.glyphHeight);
         console.log('---');
-        const diff = base.glyphHeight - current.glyphHeight;
+        const diff = (base.glyphTop - current.glyphTop) * 2;
         pen.y += diff;
         const posX = this.tinySdf.sdfs[char].x;
         const posY = this.tinySdf.sdfs[char].y;
