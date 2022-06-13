@@ -1,5 +1,6 @@
 #version 300 es
-precision highp float;                        // Set default float precision
+precision mediump float;                        // Set default float precision
+
 in vec4 pos, col, uv, normal;                 // Vertex attributes: position, color, texture coordinates, normal (if any)
 uniform mat4 pv, eye, m, im;                  // Uniform transformation matrices: projection * view, eye, model, inverse model
 uniform vec4 bb;                              // If the current shape is a billboard: bb = [w, h, 1.0, 0.0]

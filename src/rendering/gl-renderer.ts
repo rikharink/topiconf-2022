@@ -2,10 +2,13 @@ import settings, { defaultRendererSettings } from '../settings';
 import { RendererSettings } from './renderer-settings';
 import frag from './default.frag.glsl';
 import vert from './default.vert.glsl';
-import { initShaderProgram } from './gl-util';
+import { initShaderProgram, Shader } from './gl-util';
+import TinySDF from './tinysdf';
 
 export class WebGL2Renderer {
   private _ctx!: WebGL2RenderingContext;
+  public text_renderer: TinySDF;
+  private _shader!: Shader;
 
   public get canvas(): HTMLCanvasElement {
     return this._ctx.canvas;
@@ -17,6 +20,8 @@ export class WebGL2Renderer {
       ...rendererSettings,
     };
     this.setupCanvas();
+    this.text_renderer = new TinySDF(this._ctx);
+    this.text_renderer.text = 'Hello World!';
   }
 
   public setupCanvas() {
@@ -37,8 +42,7 @@ export class WebGL2Renderer {
     let [width, height] = settings.rendererSettings.resolution;
     this.setAntialias();
     this.setResolution(width, height);
-    const program = initShaderProgram(this._ctx, vert, frag)!;
-    this._ctx.useProgram(program);
+    this._shader = initShaderProgram(this._ctx, vert, frag)!;
   }
 
   public setResolution(width: number, height: number): void {
@@ -62,8 +66,10 @@ export class WebGL2Renderer {
       this._resizeToScreen();
     }
     const color = settings.rendererSettings.clearColor;
+    this._ctx.useProgram(this._shader.program);
     this._ctx.clearColor(color[0], color[1], color[2], color[3]);
     this._ctx.clear(settings.rendererSettings.clearMask);
+    this.text_renderer.render();
   }
 
   private _resizeToScreen(): boolean {

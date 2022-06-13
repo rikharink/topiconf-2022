@@ -34,6 +34,12 @@ async function showDebugGUI() {
   );
   renderingControls.addColor(settings.rendererSettings, 'clearColor');
 
+  let stateControls = controls.addFolder('state');
+  const text = stateControls.add(state, 'text');
+  text.onChange(function () {
+    state.game!.renderer.text_renderer.text = state.text;
+  });
+
   let debugControls = controls.addFolder('debug menus');
 
   //Spector.JS

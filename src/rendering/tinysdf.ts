@@ -1,4 +1,5 @@
-/*Copyright (c) 2014, Mapbox
+/*
+Copyright (c) 2014, Mapbox
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -27,7 +28,59 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+import vert from './text.vert.glsl';
+import frag from './text.frag.glsl';
+
+import { initShaderProgram, Shader } from './gl-util';
+import { create, multiply, ortho } from '../math/matrix4x4';
+import {
+  GL_ARRAY_BUFFER,
+  GL_BLEND,
+  GL_CLAMP_TO_EDGE,
+  GL_DATA_FLOAT,
+  GL_DATA_UNSIGNED_BYTE,
+  GL_LINEAR,
+  GL_ONE,
+  GL_ONE_MINUS_SRC_ALPHA,
+  GL_RGBA,
+  GL_SRC_ALPHA,
+  GL_STATIC_DRAW,
+  GL_TEXTURE0,
+  GL_TEXTURE_2D,
+  GL_TEXTURE_MAG_FILTER,
+  GL_TEXTURE_MIN_FILTER,
+  GL_TEXTURE_WRAP_S,
+  GL_TEXTURE_WRAP_T,
+  GL_TRIANGLES,
+} from './gl-constants';
+
 const INF = 1e20;
+
+interface Glyph {
+  data: Uint8ClampedArray;
+  width: number;
+  height: number;
+  glyphWidth: number;
+  glyphHeight: number;
+  glyphTop: number;
+  glyphLeft: number;
+  glyphAdvance: number;
+}
+
+interface TinySDFOptions {
+  fontSize: number;
+  buffer: number;
+  radius: number;
+  cutoff: number;
+  fontFamily: string;
+  fontWeight: string | number;
+  fontStyle: string;
+  gamma: number;
+  scale: number;
+}
+
+type SDFDictionary = { [id: string]: { x: number; y: number } };
+type Buffer = { numItems?: number };
 
 export default class TinySDF {
   buffer: number;
@@ -35,38 +88,77 @@ export default class TinySDF {
   radius: number;
   size: number;
   ctx: CanvasRenderingContext2D;
+  glyphCtx: CanvasRenderingContext2D;
   gridOuter: Float64Array;
   gridInner: Float64Array;
   f: Float64Array;
   z: Float64Array;
   v: Uint16Array;
+  chars: string =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-=_+[]{}\\|;:\'",.<>/?`~ ';
+  sdfs: SDFDictionary = {};
+  gl: WebGL2RenderingContext;
+  private _shader: Shader;
+  private _vertexBuffer: WebGLBuffer & Buffer;
+  private _textureBuffer: WebGLBuffer & Buffer;
+  private _text?: string;
+  private _dirty: boolean = true;
+  pMatrix: import('/home/rik/repos/topicus/topiconf-2022/src/math/matrix4x4').Matrix4x4;
+  texture: WebGLTexture;
+  gamma: number;
+  scale: number;
 
-  constructor({
-    fontSize = 24,
-    buffer = 3,
-    radius = 8,
-    cutoff = 0.25,
-    fontFamily = 'sans-serif',
-    fontWeight = 'normal',
-    fontStyle = 'normal',
-  } = {}) {
+  public get text(): string | undefined {
+    return this._text;
+  }
+
+  public set text(value: string | undefined) {
+    this._text = value;
+    this._dirty = true;
+  }
+
+  constructor(
+    gl: WebGL2RenderingContext,
+    {
+      fontSize = 24,
+      buffer = 3,
+      radius = 8,
+      cutoff = 0.25,
+      fontFamily = 'sans-serif',
+      fontWeight = 'normal',
+      fontStyle = 'normal',
+      gamma = 1,
+      scale = 16,
+    }: Partial<TinySDFOptions> = {},
+  ) {
     this.buffer = buffer;
     this.cutoff = cutoff;
     this.radius = radius;
+    this.gamma = gamma;
+    this.scale = scale;
+    this.gl = gl;
 
     // make the canvas size big enough to both have the specified buffer around the glyph
     // for "halo", and account for some glyphs possibly being larger than their font size
     const size = (this.size = fontSize + buffer * 4);
 
     const canvas = this._createCanvas(size);
-    const ctx = (this.ctx = canvas.getContext('2d', {
+    const glyphCtx = (this.glyphCtx = canvas.getContext('2d', {
       willReadFrequently: true,
     })!);
-    ctx.font = `${fontStyle} ${fontWeight} ${fontSize}px ${fontFamily}`;
+    glyphCtx.font = `${fontStyle} ${fontWeight} ${fontSize}px ${fontFamily}`;
 
-    ctx.textBaseline = 'alphabetic';
-    ctx.textAlign = 'left'; // Necessary so that RTL text doesn't have different alignment
-    ctx.fillStyle = 'black';
+    glyphCtx.textBaseline = 'alphabetic';
+    glyphCtx.textAlign = 'left'; // Necessary so that RTL text doesn't have different alignment
+    glyphCtx.fillStyle = 'black';
+
+    
+    const canvas2 = document.createElement('canvas');
+    const totalWidth = glyphCtx.canvas.width * this.chars.length;
+    const rows = Math.ceil(totalWidth / gl.canvas.width);
+    canvas2.width = gl.canvas.width;
+    canvas2.height = glyphCtx.canvas.height * rows;
+    this.ctx = canvas2.getContext('2d')!;
 
     // temporary arrays for the distance transform
     this.gridOuter = new Float64Array(size * size);
@@ -74,22 +166,237 @@ export default class TinySDF {
     this.f = new Float64Array(size);
     this.z = new Float64Array(size + 1);
     this.v = new Uint16Array(size);
+
+    this._updateSDF();
+
+    this._shader = initShaderProgram(gl, vert, frag)!;
+    this.pMatrix = create();
+    this.texture = gl.createTexture()!;
+    ortho(this.pMatrix, 0, gl.canvas.width, gl.canvas.height, 0, 0, -1);
+    this._textureBuffer = gl.createBuffer()!;
+    this._vertexBuffer = gl.createBuffer()!;
   }
 
-  private _createCanvas(size: number) {
+  private _drawText(size: number) {
+    if (!this.text) {
+      return;
+    }
+
+    const vertexElements = [];
+    const textureElements = [];
+
+    const fontsize = size;
+    const buf = fontsize / 8;
+    const width = fontsize + buf * 2;
+    const height = fontsize + buf * 2;
+    const bx = 0;
+    const by = fontsize / 2 + buf;
+    const advance = fontsize;
+    const scale = this.size / fontsize;
+    const lineWidth = this.text.length * fontsize * scale;
+
+    const pen = {
+      x: 0,
+      y: 0,
+    };
+
+    for (let i = 0; i < this.text.length; i++) {
+      const posX = this.sdfs[this.text[i]].x;
+      const posY = this.sdfs[this.text[i]].y;
+
+      vertexElements.push(
+        pen.x + (bx - buf) * scale,
+        pen.y - by * scale,
+        pen.x + (bx - buf + width) * scale,
+        pen.y - by * scale,
+        pen.x + (bx - buf) * scale,
+        pen.y + (height - by) * scale,
+
+        pen.x + (bx - buf + width) * scale,
+        pen.y - by * scale,
+        pen.x + (bx - buf) * scale,
+        pen.y + (height - by) * scale,
+        pen.x + (bx - buf + width) * scale,
+        pen.y + (height - by) * scale,
+      );
+
+      textureElements.push(
+        posX,
+        posY,
+        posX + width,
+        posY,
+        posX,
+        posY + height,
+        posX + width,
+        posY,
+        posX,
+        posY + height,
+        posX + width,
+        posY + height,
+      );
+
+      pen.x = pen.x + advance * scale;
+    }
+
+    this.gl.bindBuffer(GL_ARRAY_BUFFER, this._vertexBuffer);
+    this.gl.bufferData(
+      GL_ARRAY_BUFFER,
+      new Float32Array(vertexElements),
+      GL_STATIC_DRAW,
+    );
+    this._vertexBuffer.numItems = vertexElements.length / 2;
+
+    this.gl.bindBuffer(GL_ARRAY_BUFFER, this._textureBuffer);
+    this.gl.bufferData(
+      GL_ARRAY_BUFFER,
+      new Float32Array(textureElements),
+      GL_STATIC_DRAW,
+    );
+    this._textureBuffer.numItems = textureElements.length / 2;
+  }
+
+  public render() {
+    if (!this.text) {
+      return;
+    }
+    this.gl.useProgram(this._shader.program);
+    this.gl.blendFuncSeparate(
+      GL_SRC_ALPHA,
+      GL_ONE_MINUS_SRC_ALPHA,
+      GL_ONE,
+      GL_ONE,
+    );
+    this.gl.enable(GL_BLEND);
+    this.gl.enableVertexAttribArray(this._shader.a_pos);
+    this.gl.enableVertexAttribArray(this._shader.a_texcoord);
+    const sdfData = new Uint8Array(
+      this.ctx.getImageData(
+        0,
+        0,
+        this.ctx.canvas.width,
+        this.ctx.canvas.height,
+      ).data,
+    );
+    this.gl.bindTexture(GL_TEXTURE_2D, this.texture);
+    this.gl.texImage2D(
+      GL_TEXTURE_2D,
+      0,
+      GL_RGBA,
+      this.ctx.canvas.width,
+      this.ctx.canvas.height,
+      0,
+      GL_RGBA,
+      GL_DATA_UNSIGNED_BYTE,
+      sdfData,
+    );
+    this.gl.texParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    this.gl.texParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    this.gl.texParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    this.gl.texParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    this.gl.uniform2f(
+      this._shader.u_texsize,
+      this.gl.canvas.width,
+      this.gl.canvas.height,
+    );
+
+    if (this._dirty) {
+      console.log('draw text');
+      this._drawText(this.scale);
+      this._dirty = false;
+    }
+    const mvMatrix = create();
+    //TODO: rotation from center
+    const mvpMatrix = create();
+    multiply(mvpMatrix, this.pMatrix, mvMatrix);
+
+    this.gl.activeTexture(GL_TEXTURE0);
+    this.gl.bindTexture(GL_TEXTURE_2D, this.texture);
+    this.gl.uniform1i(this._shader.u_texture, 0);
+
+    this.gl.bindBuffer(GL_ARRAY_BUFFER, this._vertexBuffer);
+    this.gl.vertexAttribPointer(
+      this._shader.a_pos,
+      2,
+      GL_DATA_FLOAT,
+      false,
+      0,
+      0,
+    );
+
+    this.gl.bindBuffer(GL_ARRAY_BUFFER, this._textureBuffer);
+    this.gl.vertexAttribPointer(
+      this._shader.a_texcoord,
+      2,
+      GL_DATA_FLOAT,
+      false,
+      0,
+      0,
+    );
+
+    this.gl.uniform4fv(this._shader.u_color, [1, 1, 1, 1]);
+    this.gl.uniform1f(this._shader.u_buffer, this.buffer);
+    this.gl.drawArrays(GL_TRIANGLES, 0, this._vertexBuffer.numItems!);
+
+    this.gl.uniform4fv(this._shader.u_color, [0, 0, 0, 1]);
+    this.gl.uniform1f(this._shader.u_buffer, 0.75);
+    this.gl.uniform1f(this._shader.u_gamma, (this.gamma * 1.4142) / this.scale);
+    this.gl.drawArrays(GL_TRIANGLES, 0, this._vertexBuffer.numItems!);
+  }
+
+  private _createCanvas(size: number): HTMLCanvasElement {
     const canvas = document.createElement('canvas');
     canvas.width = canvas.height = size;
     return canvas;
   }
 
-  public draw(char: string) {
+  private _makeRGBAImageData(
+    alphaChannel: Uint8ClampedArray,
+    width: number,
+    height: number,
+  ): ImageData {
+    const imageData = this.glyphCtx.createImageData(width, height);
+    for (let i = 0; i < alphaChannel.length; i++) {
+      imageData.data[4 * i + 0] = alphaChannel[i];
+      imageData.data[4 * i + 1] = alphaChannel[i];
+      imageData.data[4 * i + 2] = alphaChannel[i];
+      imageData.data[4 * i + 3] = 255;
+    }
+    return imageData;
+  }
+
+  private _updateSDF() {
+    this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+    let i = 0;
+    for (
+      let y = 0;
+      y + this.size <= this.ctx.canvas.height && i < this.chars.length;
+      y += this.size
+    ) {
+      for (
+        let x = 0;
+        x + this.size <= this.ctx.canvas.width && i < this.chars.length;
+        x += this.size
+      ) {
+        const { data, width, height } = this._draw(this.chars[i]);
+        this.ctx.putImageData(
+          this._makeRGBAImageData(data, width, height),
+          x,
+          y,
+        );
+        this.sdfs[this.chars[i]] = { x, y };
+        i++;
+      }
+    }
+  }
+
+  private _draw(char: string): Glyph {
     const {
       width: glyphAdvance,
       actualBoundingBoxAscent,
       actualBoundingBoxDescent,
       actualBoundingBoxLeft,
       actualBoundingBoxRight,
-    } = this.ctx.measureText(char);
+    } = this.glyphCtx.measureText(char);
 
     // The integer/pixel part of the top alignment is encoded in metrics.glyphTop
     // The remainder is implicitly encoded in the rasterization
@@ -123,7 +430,7 @@ export default class TinySDF {
     };
     if (glyphWidth === 0 || glyphHeight === 0) return glyph;
 
-    const { ctx, buffer, gridInner, gridOuter } = this;
+    const { glyphCtx: ctx, buffer, gridInner, gridOuter } = this;
     ctx.clearRect(buffer, buffer, glyphWidth, glyphHeight);
     ctx.fillText(char, buffer, buffer + glyphTop);
     const imgData = ctx.getImageData(buffer, buffer, glyphWidth, glyphHeight);
@@ -185,7 +492,7 @@ function edt(
   f: Float64Array,
   v: Uint16Array,
   z: Float64Array,
-) {
+): void {
   for (let x = x0; x < x0 + width; x++)
     edt1d(data, y0 * gridSize + x, gridSize, height, f, v, z);
   for (let y = y0; y < y0 + height; y++)
@@ -201,7 +508,7 @@ function edt1d(
   f: Float64Array,
   v: Uint16Array,
   z: Float64Array,
-) {
+): void {
   v[0] = 0;
   z[0] = -INF;
   z[1] = INF;
