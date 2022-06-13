@@ -7,7 +7,7 @@ interface State {
 
 const state: State = {
   game: undefined,
-  text: 'Hello World!',
+  text: 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz-_-\nLets build a Tiny Game!!!',
 };
 
 export default state;

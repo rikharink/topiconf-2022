@@ -9,6 +9,7 @@ import {
 
 export interface Shader {
   program: WebGLProgram;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
 }
 
@@ -17,15 +18,16 @@ export function initShaderProgram(
   vertexSource: string,
   fragSource: string,
 ): Shader | null {
-  const vertexShader = loadShader(gl, GL_VERTEX_SHADER, vertexSource);
-  const fragmentShader = loadShader(gl, GL_FRAGMENT_SHADER, fragSource);
+  const vertexShader = loadShader(gl, GL_VERTEX_SHADER, vertexSource)!;
+  const fragmentShader = loadShader(gl, GL_FRAGMENT_SHADER, fragSource)!;
 
   const program = gl.createProgram()!;
   gl.attachShader(program, vertexShader);
   gl.attachShader(program, fragmentShader);
   gl.linkProgram(program);
+
   if (
-    process.env.NODE_ENV === 'DEBUG' &&
+    process.env.NODE_ENV === 'development' &&
     !gl.getProgramParameter(program, GL_LINK_STATUS)
   ) {
     console.error(
@@ -34,7 +36,7 @@ export function initShaderProgram(
     );
     return null;
   }
-  let wrapper: Shader = { program };
+  const wrapper: Shader = { program };
 
   const numAttributes = gl.getProgramParameter(program, GL_ACTIVE_ATTRIBUTES);
   for (let i = 0; i < numAttributes; i++) {
@@ -51,19 +53,23 @@ export function initShaderProgram(
   return wrapper;
 }
 
-function loadShader(gl: WebGL2RenderingContext, type: number, source: string) {
+function loadShader(
+  gl: WebGL2RenderingContext,
+  type: number,
+  source: string,
+): WebGLShader | null {
   const shader = gl.createShader(type)!;
   gl.shaderSource(shader, source);
   gl.compileShader(shader);
   if (
-    process.env.NODE_ENV === 'DEBUG' &&
+    process.env.NODE_ENV === 'development' &&
     !gl.getShaderParameter(shader, GL_COMPILE_STATUS)
   ) {
     console.error(
-      'An error occurred compiling the shaders: ' +
-        gl.getShaderInfoLog(shader),
+      'An error occurred compiling the shaders: ' + gl.getShaderInfoLog(shader),
     );
     gl.deleteShader(shader);
+    return null;
   }
   return shader;
 }

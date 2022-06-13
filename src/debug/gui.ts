@@ -1,18 +1,65 @@
+import { TAU } from '../math/util';
 import settings from '../settings';
 import state from '../state';
 
-let debugMenus = {
-  showSpector: false,
+const debugMenus = {
+  showSpector: true,
   showStats: false,
 };
 
 async function showDebugGUI() {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   //@ts-ignore
   const controls = new lil.GUI();
-  let gameControls = controls.addFolder('game');
+  const gameControls = controls.addFolder('game');
   gameControls.add(settings, 'dt', 10, 100, 1);
 
-  let renderingControls = controls.addFolder('rendering');
+  const textControls = controls.addFolder('text');
+  textControls.add(
+    settings.rendererSettings.textRendererSettings,
+    'scale',
+    16,
+    256,
+    1,
+  );
+
+  textControls.add(
+    settings.rendererSettings.textRendererSettings,
+    'halo',
+    0,
+    1,
+    0.01,
+  );
+
+  textControls.add(
+    settings.rendererSettings.textRendererSettings,
+    'angle',
+    -TAU,
+    TAU,
+    0.01,
+  );
+
+  textControls.add(
+    settings.rendererSettings.textRendererSettings,
+    'gamma',
+    0,
+    10,
+    0.01,
+  );
+  textControls.addColor(
+    settings.rendererSettings.textRendererSettings,
+    'textColor',
+  );
+  textControls.addColor(
+    settings.rendererSettings.textRendererSettings,
+    'haloColor',
+  );
+  const text = textControls.add(state, 'text');
+  text.onChange(function () {
+    state.game!.renderer.text_renderer.text = state.text;
+  });
+
+  const renderingControls = controls.addFolder('rendering');
   const aac = renderingControls.add(
     settings.rendererSettings,
     'antialias',
@@ -33,17 +80,11 @@ async function showDebugGUI() {
     settings.rendererSettings.resizeToScreen,
   );
   renderingControls.addColor(settings.rendererSettings, 'clearColor');
-  renderingControls.addColor(settings.rendererSettings, 'textColor');
-  renderingControls.addColor(settings.rendererSettings, 'haloColor');
-  const text = renderingControls.add(state, 'text');
-  text.onChange(function () {
-    state.game!.renderer.text_renderer.text = state.text;
-  });
 
-  let debugControls = controls.addFolder('debug menus');
+  const debugControls = controls.addFolder('debug menus');
 
   //Spector.JS
-  let spector = debugControls.add(
+  const spector = debugControls.add(
     debugMenus,
     'showSpector',
     debugMenus.showSpector,
@@ -55,7 +96,11 @@ async function showDebugGUI() {
   setTimeout(() => showSpectorGUI(debugMenus.showSpector), 100);
 
   //Stats.js
-  let stats = debugControls.add(debugMenus, 'showStats', debugMenus.showStats);
+  const stats = debugControls.add(
+    debugMenus,
+    'showStats',
+    debugMenus.showStats,
+  );
   stats.onChange(function (v: boolean) {
     showStatsGUI(v);
   });
@@ -64,7 +109,9 @@ async function showDebugGUI() {
 }
 
 if (process.env.NODE_ENV === 'development') {
+  // eslint-disable-next-line no-var
   var stats = new Stats();
+  // eslint-disable-next-line no-var
   var spector: SPECTOR.Spector;
 }
 
@@ -73,7 +120,7 @@ function showStatsGUI(isVisible: boolean) {
 }
 
 function showSpectorGUI(isVisible: boolean) {
-  let ele = document.querySelector('.captureMenuComponent')!.parentElement!;
+  const ele = document.querySelector('.captureMenuComponent')!.parentElement!;
   ele.style.display = isVisible ? 'block' : 'none';
 }
 
@@ -86,7 +133,8 @@ function createSpectorGUI() {
   spector = new SPECTOR.Spector();
   spector.spyCanvas(state.game!.renderer.canvas);
   spector.displayUI();
-  let w = window as any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const w = window as any;
   w.spector = spector;
 }
 

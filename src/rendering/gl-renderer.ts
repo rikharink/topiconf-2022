@@ -1,9 +1,13 @@
-import settings, { defaultRendererSettings } from '../settings';
+import settings, {
+  defaultRendererSettings,
+  defaultTextRendererOptions as defaultTextRendererSettings,
+} from '../settings';
 import { RendererSettings } from './renderer-settings';
 import frag from './default.frag.glsl';
 import vert from './default.vert.glsl';
 import { initShaderProgram, Shader } from './gl-util';
-import { TextRenderer } from './text-renderer';
+import { TextRenderer, TextRendererSettings } from './text-renderer';
+import state from '../state';
 
 export class WebGL2Renderer {
   private gl!: WebGL2RenderingContext;
@@ -14,14 +18,22 @@ export class WebGL2Renderer {
     return this.gl.canvas;
   }
 
-  constructor(rendererSettings?: Partial<RendererSettings>) {
+  constructor(
+    rendererSettings?: Partial<RendererSettings>,
+    textRendererSettings?: Partial<TextRendererSettings>,
+  ) {
     settings.rendererSettings = {
       ...defaultRendererSettings,
       ...rendererSettings,
     };
+
+    settings.rendererSettings.textRendererSettings = {
+      ...defaultTextRendererSettings,
+      ...textRendererSettings,
+    };
     this.setupCanvas();
     this.text_renderer = new TextRenderer(this.gl);
-    this.text_renderer.text = 'Hello World!';
+    this.text_renderer.text = state.text;
   }
 
   public setupCanvas() {
@@ -31,7 +43,7 @@ export class WebGL2Renderer {
       parent = c.parentElement;
       c.remove();
     }
-    let canvas = document.createElement('canvas');
+    const canvas = document.createElement('canvas');
     if (parent) {
       parent.appendChild(canvas);
     }
@@ -39,7 +51,7 @@ export class WebGL2Renderer {
     this.gl = canvas.getContext('webgl2', {
       antialias: settings.rendererSettings.antialias,
     })!;
-    let [width, height] = settings.rendererSettings.resolution;
+    const [width, height] = settings.rendererSettings.resolution;
     this.setAntialias();
     this.setResolution(width, height);
     this._shader = initShaderProgram(this.gl, vert, frag)!;

@@ -1,12 +1,12 @@
-import { NormalizedRgbaColor, Resolution, RgbaColor } from '../types';
+import { NormalizedRgbaColor, Resolution } from '../types';
+import { TextRendererSettings } from './text-renderer';
 
 export interface RendererSettings {
-  textColor: NormalizedRgbaColor;
-  haloColor: NormalizedRgbaColor;
   clearColor: NormalizedRgbaColor;
   clearMask: number;
   resolution: Resolution;
   supportHiDpi: boolean;
   resizeToScreen: boolean;
   antialias: boolean;
+  textRendererSettings: TextRendererSettings;
 }
