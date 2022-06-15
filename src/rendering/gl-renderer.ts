@@ -3,11 +3,12 @@ import settings, {
   defaultTextRendererOptions as defaultTextRendererSettings,
 } from '../settings';
 import { RendererSettings } from './renderer-settings';
-import frag from './default.frag.glsl';
-import vert from './default.vert.glsl';
+import frag from './shaders/default.frag.glsl';
+import vert from './shaders/default.vert.glsl';
 import { initShaderProgram, Shader } from './gl-util';
 import { TextRenderer, TextRendererSettings } from './text-renderer';
 import state from '../state';
+import { Scene } from '../game/scene';
 
 export class WebGL2Renderer {
   private gl!: WebGL2RenderingContext;
@@ -33,7 +34,6 @@ export class WebGL2Renderer {
     };
     this.setupCanvas();
     this.text_renderer = new TextRenderer(this.gl);
-    this.text_renderer.text = state.text;
   }
 
   public setupCanvas() {
@@ -73,7 +73,7 @@ export class WebGL2Renderer {
     }
   }
 
-  public render() {
+  public render(scene: Scene) {
     if (settings.rendererSettings.resizeToScreen) {
       this._resizeToScreen();
     }
@@ -81,7 +81,7 @@ export class WebGL2Renderer {
     this.gl.useProgram(this._shader.program);
     this.gl.clearColor(color[0], color[1], color[2], color[3]);
     this.gl.clear(settings.rendererSettings.clearMask);
-    this.text_renderer.render();
+    this.text_renderer.render(scene);
   }
 
   private _resizeToScreen(): boolean {

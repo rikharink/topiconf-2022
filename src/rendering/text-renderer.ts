@@ -28,8 +28,8 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-import vert from './text.vert.glsl';
-import frag from './text.frag.glsl';
+import vert from './shaders/text.vert.glsl';
+import frag from './shaders/text.frag.glsl';
 
 import { initShaderProgram, Shader } from './gl-util';
 import {
@@ -62,6 +62,7 @@ import {
 } from './gl-constants';
 import settings from '../settings';
 import { NormalizedRgbaColor, Radian } from '../types';
+import { Scene } from '../game/scene';
 
 const INF = 1e20;
 const SUPPORTED_CHARS =
@@ -108,6 +109,9 @@ export interface TextRendererSettings {
   gamma: number;
   textColor: NormalizedRgbaColor;
   haloColor: NormalizedRgbaColor;
+  fontFamily: string;
+  lineHeight: number;
+  letterSpacing: number;
 }
 
 export class TextRenderer {
@@ -117,19 +121,18 @@ export class TextRenderer {
   private _shader: Shader;
   private _vertexBuffer: WebGLBuffer & Buffer;
   private _textureBuffer: WebGLBuffer & Buffer;
-  private _text?: string;
   private _pMatrix: Matrix4x4;
   private _texture: WebGLTexture;
-  private _dirty = true;
+  public isSdfDirty = true;
+  public isDirty = true;
 
   public constructor(gl: WebGL2RenderingContext) {
     this.gl = gl;
-    this.tinySdf = new TinySDF({ fontFamily: 'Cascadia Mono, monospace' });
+    this.tinySdf = new TinySDF({ fontFamily: settings.rendererSettings.textRendererSettings.fontFamily });
 
     this._shader = initShaderProgram(gl, vert, frag)!;
     this._vertexBuffer = gl.createBuffer()!;
     this._textureBuffer = gl.createBuffer()!;
-    this._text = '';
     this._pMatrix = create();
     ortho(this._pMatrix, 0, gl.canvas.width, gl.canvas.height, 0, 0, -1);
     this._texture = gl.createTexture()!;
@@ -142,20 +145,7 @@ export class TextRenderer {
     }
   }
 
-  public get text(): string | undefined {
-    return this._text;
-  }
-
-  public set text(value: string | undefined) {
-    this._dirty = true;
-    this._text = value;
-  }
-
-  private _drawText(size: number) {
-    if (!this.text) {
-      return;
-    }
-
+  private _drawText(text: string, size: number) {
     const vertexElements = [];
     const textureElements = [];
 
@@ -166,20 +156,27 @@ export class TextRenderer {
     const bx = 0;
     const by = fontsize / 2 + buf;
     const scale = size / fontsize;
+    const lineHeight = settings.rendererSettings.textRendererSettings.lineHeight;
+    const letterSpacing = settings.rendererSettings.textRendererSettings.letterSpacing;
 
-    const lines = this.text.split('\n');
+    const lines = text.split('\n');
 
     const base = this.tinySdf.sdfs['H'];
+    const textHeight = lines.length * fontsize * scale * lineHeight;
+    const canvasHeight = this.gl.canvas.height;
+    const canvasWidth = this.gl.canvas.width;
+    const baseX = canvasWidth * 0.5;
+    const baseY = canvasHeight * 0.5 - textHeight * 0.5;
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
       const lineWidth = line
         .split('')
-        .reduce((acc, c) => acc + this.tinySdf.sdfs[c].glyphAdvance * scale, 0);
+        .reduce((acc, c) => acc + this.tinySdf.sdfs[c].glyphAdvance * scale + letterSpacing, 0);
 
       const pen = {
-        x: this.gl.canvas.width * 0.5 - lineWidth * 0.5,
-        y: this.gl.canvas.height / 2 + i * fontsize * scale,
+        x: baseX - lineWidth * 0.5,
+        y: baseY + i * fontsize * scale * lineHeight,
       };
       for (let i = 0; i < line.length; i++) {
         const char = line.charAt(i);
@@ -192,11 +189,11 @@ export class TextRenderer {
           pen.x = pen.x + current.glyphAdvance * scale;
           continue;
         }
-        console.log('character', char);
-        console.log('base', base.glyphTop, base.glyphHeight);
-        console.log('current', current.glyphTop, current.glyphHeight);
-        console.log('---');
-        const diff = (base.glyphTop - current.glyphTop) * 2;
+
+        const diff =
+          current.glyphHeight -
+          current.glyphTop +
+          (base.glyphHeight - current.glyphHeight);
         pen.y += diff;
         const posX = this.tinySdf.sdfs[char].x;
         const posY = this.tinySdf.sdfs[char].y;
@@ -207,7 +204,7 @@ export class TextRenderer {
           pen.x + (bx - buf + width) * scale,
           pen.y - by * scale,
           pen.x + (bx - buf) * scale,
-          pen.y + (height - by) * scale,
+          pen.y + (height - by) * scale ,
 
           pen.x + (bx - buf + width) * scale,
           pen.y - by * scale,
@@ -232,7 +229,7 @@ export class TextRenderer {
           posX + width,
           posY + height,
         );
-        pen.x = pen.x + current.glyphAdvance * scale;
+        pen.x = pen.x + current.glyphAdvance * scale + letterSpacing;
       }
     }
 
@@ -253,20 +250,20 @@ export class TextRenderer {
     this._textureBuffer.numItems = textureElements.length / 2;
   }
 
-  private _previousScale = settings.rendererSettings.textRendererSettings.scale;
 
-  public render() {
-    if (!this.text) {
+  public render(scene: Scene) {
+    if (!scene.text) {
       return;
     }
+
+    if(this.isSdfDirty) {
+      this.tinySdf.updateSdf();
+    }
+
     const scale =
       settings.rendererSettings.textRendererSettings.scale *
       (window.devicePixelRatio / 2);
 
-    if (scale != this._previousScale) {
-      this._dirty = true;
-    }
-    this._previousScale = scale;
     const buffer = settings.rendererSettings.textRendererSettings.halo;
     const angle = settings.rendererSettings.textRendererSettings.angle;
     const gamma = settings.rendererSettings.textRendererSettings.gamma;
@@ -280,7 +277,7 @@ export class TextRenderer {
     );
     this.gl.enable(GL_BLEND);
     this.gl.enableVertexAttribArray(this._shader.a_pos);
-    this.gl.enableVertexAttribArray(this._shader.a_texcoord);
+    this.gl.enableVertexAttribArray(this._shader.a_uv);
     const sdfData = new Uint8Array(
       this.tinySdf.ctx.getImageData(
         0,
@@ -311,9 +308,9 @@ export class TextRenderer {
       this.tinySdf.ctx.canvas.height,
     );
 
-    if (this._dirty) {
-      this._drawText(scale);
-      this._dirty = false;
+    if (this.isDirty) {
+      this._drawText(scene.text, scale);
+      this.isDirty = false;
     }
 
     const mvMatrix = create();
@@ -348,7 +345,7 @@ export class TextRenderer {
 
     this.gl.bindBuffer(GL_ARRAY_BUFFER, this._textureBuffer);
     this.gl.vertexAttribPointer(
-      this._shader.a_texcoord,
+      this._shader.a_uv,
       2,
       GL_DATA_FLOAT,
       false,
@@ -361,6 +358,10 @@ export class TextRenderer {
       settings.rendererSettings.textRendererSettings.haloColor,
     );
     this.gl.uniform1f(this._shader.u_buffer, buffer);
+    this.gl.uniform1f(
+      this._shader.u_gamma,
+      (gamma * 1.4142) / settings.rendererSettings.textRendererSettings.scale,
+    );
     this.gl.drawArrays(GL_TRIANGLES, 0, this._vertexBuffer.numItems!);
 
     this.gl.uniform4fv(
@@ -368,10 +369,6 @@ export class TextRenderer {
       settings.rendererSettings.textRendererSettings.textColor,
     );
     this.gl.uniform1f(this._shader.u_buffer, 0.75);
-    this.gl.uniform1f(
-      this._shader.u_gamma,
-      (gamma * 1.4142) / settings.rendererSettings.textRendererSettings.scale,
-    );
     this.gl.drawArrays(GL_TRIANGLES, 0, this._vertexBuffer.numItems!);
   }
 }
@@ -395,6 +392,7 @@ class TinySDF {
   public fontSize: number;
   public glyphWidth: number;
   public glyphHeight: number;
+  private _fontStyle: string;
 
   constructor({
     fontSize = 24,
@@ -410,6 +408,7 @@ class TinySDF {
     this._radius = radius;
     this.fontSize = fontSize;
     this._fontWeight = fontWeight;
+    this._fontStyle = fontStyle;
 
     // make the canvas size big enough to both have the specified buffer around the glyph
     // for "halo", and account for some glyphs possibly being larger than their font size
@@ -440,6 +439,11 @@ class TinySDF {
     this._z = new Float64Array(size + 1);
     this._v = new Uint16Array(size);
 
+    this._updateSDF();
+  }
+
+  public updateSdf() {
+    this._glyphCtx.font = `${this._fontStyle} ${this._fontWeight} ${this.fontSize}px ${settings.rendererSettings.textRendererSettings.fontFamily}`;
     this._updateSDF();
   }
 

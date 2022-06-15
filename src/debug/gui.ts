@@ -14,14 +14,19 @@ async function showDebugGUI() {
   const gameControls = controls.addFolder('game');
   gameControls.add(settings, 'dt', 10, 100, 1);
 
+  const markDirty = function() {
+    state.game!.renderer.text_renderer.isDirty = true;
+  };
+
   const textControls = controls.addFolder('text');
-  textControls.add(
+  const scale = textControls.add(
     settings.rendererSettings.textRendererSettings,
     'scale',
     16,
     256,
     1,
   );
+  scale.onChange(markDirty);
 
   textControls.add(
     settings.rendererSettings.textRendererSettings,
@@ -54,11 +59,17 @@ async function showDebugGUI() {
     settings.rendererSettings.textRendererSettings,
     'haloColor',
   );
-  const text = textControls.add(state, 'text');
-  text.onChange(function () {
-    state.game!.renderer.text_renderer.text = state.text;
+
+  const ff = textControls.add(settings.rendererSettings.textRendererSettings, 'fontFamily');
+  ff.onChange(function() {
+    state.game!.renderer.text_renderer.isSdfDirty = true;
   });
 
+  const lh = textControls.add(settings.rendererSettings.textRendererSettings, 'lineHeight', 0.8, 2.0);
+ 
+  lh.onChange(markDirty);
+  const ls = textControls.add(settings.rendererSettings.textRendererSettings, 'letterSpacing', -10, 100);
+  ls.onChange(markDirty);
   const renderingControls = controls.addFolder('rendering');
   const aac = renderingControls.add(
     settings.rendererSettings,

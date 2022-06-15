@@ -12,6 +12,9 @@ export const defaultTextRendererOptions: TextRendererSettings = {
   gamma: 2,
   textColor: [1, 1, 1, 1],
   haloColor: [1, 1, 0, 1],
+  fontFamily: "monospace",
+  lineHeight: 1.2,
+  letterSpacing: 0,
 };
 
 export const defaultRendererSettings: RendererSettings = {
