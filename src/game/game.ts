@@ -20,7 +20,7 @@ export class Game {
   }
 
   loop(now: Milliseconds) {
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === 'development' && stats.begin) {
       stats.begin();
     }
     this._handle = requestAnimationFrame(this.loop.bind(this));

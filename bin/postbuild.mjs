@@ -99,5 +99,5 @@ result = minify(result);
 fs.writeFileSync(join('dist', 'index.min.html'), result);
 await archive(result);
 
-fs.mkdirSync('public');
+fs.mkdirSync('public', { recursive: true });
 fs.copyFileSync(join('dist', 'index.min.html'), join('public', 'index.html'));

@@ -161,7 +161,7 @@ export class TextRenderer {
 
     const lines = text.split('\n');
 
-    const base = this.tinySdf.sdfs['H'];
+    
     const textHeight = lines.length * fontsize * scale * lineHeight;
     const canvasHeight = this.gl.canvas.height;
     const canvasWidth = this.gl.canvas.width;
@@ -184,17 +184,12 @@ export class TextRenderer {
           break;
         }
         const current = this.tinySdf.sdfs[char];
-
         if (char === ' ') {
           pen.x = pen.x + current.glyphAdvance * scale;
           continue;
         }
-
-        const diff =
-          current.glyphHeight -
-          current.glyphTop +
-          (base.glyphHeight - current.glyphHeight);
-        pen.y += diff;
+       
+       
         const posX = this.tinySdf.sdfs[char].x;
         const posY = this.tinySdf.sdfs[char].y;
 
@@ -213,7 +208,6 @@ export class TextRenderer {
           pen.x + (bx - buf + width) * scale,
           pen.y + (height - by) * scale,
         );
-        pen.y -= diff;
 
         textureElements.push(
           posX,

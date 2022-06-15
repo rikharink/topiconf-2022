@@ -11,6 +11,9 @@ async function showDebugGUI() {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   //@ts-ignore
   const controls = new lil.GUI();
+  if(!controls.addFolder){
+    return;
+  }
   const gameControls = controls.addFolder('game');
   gameControls.add(settings, 'dt', 10, 100, 1);
 
