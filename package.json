@@ -16,7 +16,8 @@
     "build": "cross-env NODE_ENV=production MINIFY=true ROADROLLER=true rollup -c",
     "postbuild": "node ./bin/postbuild.mjs",
     "lint": "eslint ./src --ext .ts",
-    "prettier": "prettier --config .prettierrc 'src/**/*.ts' --write"
+    "prettier": "prettier --config .prettierrc 'src/**/*.ts' --write",
+    "audit:fix": "npm_config_yes=true npx yarn-audit-fix"
   },
   "devDependencies": {
     "@rollup/plugin-image": "^2.1.1",
