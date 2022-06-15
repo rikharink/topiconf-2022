@@ -98,3 +98,6 @@ result = await inline(result);
 result = minify(result);
 fs.writeFileSync(join('dist', 'index.min.html'), result);
 await archive(result);
+
+fs.mkdirSync('public');
+fs.copyFileSync(join('dist', 'index.min.html'), join('public', 'index.html'));
