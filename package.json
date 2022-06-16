@@ -23,7 +23,7 @@
     "@rollup/plugin-image": "^2.1.1",
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-replace": "^4.0.0",
-    "@rollup/plugin-typescript": "^8.3.2",
+    "@rollup/plugin-typescript": "^8.3.3",
     "@types/html-minifier": "^4.0.2",
     "@types/stats.js": "^0.17.0",
     "@typescript-eslint/eslint-plugin": "^5.28.0",
