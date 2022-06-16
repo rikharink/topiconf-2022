@@ -48,7 +48,7 @@
     "spectorjs": "^0.9.27",
     "terser": "^5.13.1",
     "tslib": "^2.4.0",
-    "typescript": "^4.6.4",
+    "typescript": "^4.7.3",
     "web-resource-inliner": "^5.0.0"
   },
   "dependencies": {}
