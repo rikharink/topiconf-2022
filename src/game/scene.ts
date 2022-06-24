@@ -10,7 +10,7 @@ export class Scene {
   }
 
   public addNext(text: string): Scene {
-    var child = new Scene(text, this);
+    var child = new Scene(text.toUpperCase(), this);
     this.next = child;
     return child;
   }
