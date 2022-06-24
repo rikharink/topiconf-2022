@@ -1,5 +1,5 @@
 #version 300 es
-precision mediump float;                  // Set default float precision
+precision highp float;                  // Set default float precision
 in vec4 v_pos, v_col, v_uv, v_normal;   // Varyings received from the vertex shader: position, color, texture coordinates, normal (if any)
 uniform vec3 light;                     // Uniform: light direction, smooth normals enabled
 uniform vec4 o;                         // options [smooth, shading enabled, ambient, mix]

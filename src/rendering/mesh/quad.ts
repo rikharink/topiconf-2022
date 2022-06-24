@@ -1,7 +1,7 @@
 import { Vector3 } from '../../math/vector3';
 import { Mesh } from './mesh';
 
-interface PlaneOptions {
+interface QuadOptions {
   p1: Vector3;
   p2: Vector3;
   p3: Vector3;
@@ -9,7 +9,7 @@ interface PlaneOptions {
 }
 
 export class Quad extends Mesh {
-  constructor(options?: Partial<PlaneOptions>) {
+  constructor(options?: Partial<QuadOptions>) {
     super();
     const {
       p1 = [-1, -1, 0],

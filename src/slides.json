@@ -1,6 +1,7 @@
 [
   {
-    "text": "JS13K: SO YOU WANT TO BUILD A TINY GAME?"
+    "text": "JS13K: SO YOU WANT TO BUILD A TINY GAME?",
+    "background": ["#F19A13", "#E74043", "#982A7C", "#00A0E3"]
   },
   {
     "text": "WHAT IS JS13K?"

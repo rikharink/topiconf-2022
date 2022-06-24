@@ -7,18 +7,18 @@ import { TextRendererSettings } from './rendering/text-renderer';
 
 export const defaultTextRendererOptions: TextRendererSettings = {
   scale: 128,
-  halo: 0.75,
+  halo: 0.64,
   angle: 0,
   gamma: 2,
   textColor: [1, 1, 1, 1],
-  haloColor: [1, 1, 0, 1],
-  fontFamily: "monospace",
+  haloColor: [0, 0, 0, 1],
+  fontFamily: 'monospace',
   lineHeight: 1.2,
   letterSpacing: 0,
 };
 
 export const defaultRendererSettings: RendererSettings = {
-  clearColor: [0, 0, 0, 1],
+  clearColor: [1, 1, 1, 1],
   clearMask: GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT,
   supportHiDpi: false,
   resizeToScreen: false,

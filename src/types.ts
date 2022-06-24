@@ -17,3 +17,8 @@ export type UUIDV4 = string;
 export type Point2D = Vector2;
 export type Point3D = Vector3;
 export type Resolution = [width: number, height: number];
+
+export type Slide = {
+  text: string;
+  background?: string[];
+};

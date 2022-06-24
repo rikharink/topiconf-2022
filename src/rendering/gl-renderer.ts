@@ -4,14 +4,22 @@ import settings, {
 } from '../settings';
 import { RendererSettings } from './renderer-settings';
 import frag from './shaders/default.frag.glsl';
-import vert from './shaders/default.vert.glsl';
+import vert from './shaders/triangle.vert.glsl';
 import { initShaderProgram, Shader } from './gl-util';
 import { TextRenderer, TextRendererSettings } from './text-renderer';
-import state from '../state';
 import { Scene } from '../game/scene';
+import {
+  GL_BLEND,
+  GL_ONE,
+  GL_ONE_MINUS_SRC_ALPHA,
+  GL_SRC_ALPHA,
+  GL_TEXTURE0,
+  GL_TEXTURE_2D,
+  GL_TRIANGLE_FAN,
+} from './gl-constants';
 
 export class WebGL2Renderer {
-  private gl!: WebGL2RenderingContext;
+  public gl!: WebGL2RenderingContext;
   public text_renderer: TextRenderer;
   private _shader!: Shader;
 
@@ -55,6 +63,16 @@ export class WebGL2Renderer {
     this.setAntialias();
     this.setResolution(width, height);
     this._shader = initShaderProgram(this.gl, vert, frag)!;
+    this.gl.blendFuncSeparate(
+      GL_SRC_ALPHA,
+      GL_ONE_MINUS_SRC_ALPHA,
+      GL_ONE,
+      GL_ONE,
+    );
+    this.gl.enable(GL_BLEND);
+
+    const color = settings.rendererSettings.clearColor;
+    this.gl.clearColor(color[0], color[1], color[2], color[3]);
   }
 
   public setResolution(width: number, height: number): void {
@@ -77,10 +95,15 @@ export class WebGL2Renderer {
     if (settings.rendererSettings.resizeToScreen) {
       this._resizeToScreen();
     }
-    const color = settings.rendererSettings.clearColor;
+
     this.gl.useProgram(this._shader.program);
-    this.gl.clearColor(color[0], color[1], color[2], color[3]);
     this.gl.clear(settings.rendererSettings.clearMask);
+    if (scene.bg_texture) {
+      this.gl.activeTexture(GL_TEXTURE0);
+      this.gl.bindTexture(GL_TEXTURE_2D, scene.bg_texture);
+      this.gl.uniform1i(this._shader.sampler, 0);
+    }
+    this.gl.drawArrays(GL_TRIANGLE_FAN, 0, 3);
     this.text_renderer.render(scene);
   }
 

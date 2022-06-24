@@ -11,13 +11,13 @@ async function showDebugGUI() {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   //@ts-ignore
   const controls = new lil.GUI();
-  if(!controls.addFolder){
+  if (!controls.addFolder) {
     return;
   }
   const gameControls = controls.addFolder('game');
   gameControls.add(settings, 'dt', 10, 100, 1);
 
-  const markDirty = function() {
+  const markDirty = function () {
     state.game!.renderer.text_renderer.isDirty = true;
   };
 
@@ -63,15 +63,28 @@ async function showDebugGUI() {
     'haloColor',
   );
 
-  const ff = textControls.add(settings.rendererSettings.textRendererSettings, 'fontFamily');
-  ff.onChange(function() {
+  const ff = textControls.add(
+    settings.rendererSettings.textRendererSettings,
+    'fontFamily',
+  );
+  ff.onChange(function () {
     state.game!.renderer.text_renderer.isSdfDirty = true;
   });
 
-  const lh = textControls.add(settings.rendererSettings.textRendererSettings, 'lineHeight', 0.8, 2.0);
- 
+  const lh = textControls.add(
+    settings.rendererSettings.textRendererSettings,
+    'lineHeight',
+    0.8,
+    2.0,
+  );
+
   lh.onChange(markDirty);
-  const ls = textControls.add(settings.rendererSettings.textRendererSettings, 'letterSpacing', -10, 100);
+  const ls = textControls.add(
+    settings.rendererSettings.textRendererSettings,
+    'letterSpacing',
+    -10,
+    100,
+  );
   ls.onChange(markDirty);
   const renderingControls = controls.addFolder('rendering');
   const aac = renderingControls.add(
@@ -147,9 +160,6 @@ function createSpectorGUI() {
   spector = new SPECTOR.Spector();
   spector.spyCanvas(state.game!.renderer.canvas);
   spector.displayUI();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const w = window as any;
-  w.spector = spector;
 }
 
 export { stats, showDebugGUI };

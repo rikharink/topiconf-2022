@@ -66,7 +66,7 @@ import { Scene } from '../game/scene';
 
 const INF = 1e20;
 const SUPPORTED_CHARS =
-  'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-=_+[]{}\\|;:\'",.<>/?`~ ';
+  'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-=_+[]{}\\|;:\'",.<>/?`~ ';
 
 interface Glyph {
   data: Uint8ClampedArray;
@@ -128,7 +128,10 @@ export class TextRenderer {
 
   public constructor(gl: WebGL2RenderingContext) {
     this.gl = gl;
-    this.tinySdf = new TinySDF({ fontFamily: settings.rendererSettings.textRendererSettings.fontFamily });
+    this.tinySdf = new TinySDF({
+      fontFamily: settings.rendererSettings.textRendererSettings.fontFamily,
+      fontWeight: 'bold',
+    });
 
     this._shader = initShaderProgram(gl, vert, frag)!;
     this._vertexBuffer = gl.createBuffer()!;
@@ -156,12 +159,13 @@ export class TextRenderer {
     const bx = 0;
     const by = fontsize / 2 + buf;
     const scale = size / fontsize;
-    const lineHeight = settings.rendererSettings.textRendererSettings.lineHeight;
-    const letterSpacing = settings.rendererSettings.textRendererSettings.letterSpacing;
+    const lineHeight =
+      settings.rendererSettings.textRendererSettings.lineHeight;
+    const letterSpacing =
+      settings.rendererSettings.textRendererSettings.letterSpacing;
 
     const lines = text.split('\n');
 
-    
     const textHeight = lines.length * fontsize * scale * lineHeight;
     const canvasHeight = this.gl.canvas.height;
     const canvasWidth = this.gl.canvas.width;
@@ -172,7 +176,11 @@ export class TextRenderer {
       const line = lines[i];
       const lineWidth = line
         .split('')
-        .reduce((acc, c) => acc + this.tinySdf.sdfs[c].glyphAdvance * scale + letterSpacing, 0);
+        .reduce(
+          (acc, c) =>
+            acc + this.tinySdf.sdfs[c].glyphAdvance * scale + letterSpacing,
+          0,
+        );
 
       const pen = {
         x: baseX - lineWidth * 0.5,
@@ -188,8 +196,7 @@ export class TextRenderer {
           pen.x = pen.x + current.glyphAdvance * scale;
           continue;
         }
-       
-       
+
         const posX = this.tinySdf.sdfs[char].x;
         const posY = this.tinySdf.sdfs[char].y;
 
@@ -199,7 +206,7 @@ export class TextRenderer {
           pen.x + (bx - buf + width) * scale,
           pen.y - by * scale,
           pen.x + (bx - buf) * scale,
-          pen.y + (height - by) * scale ,
+          pen.y + (height - by) * scale,
 
           pen.x + (bx - buf + width) * scale,
           pen.y - by * scale,
@@ -244,13 +251,12 @@ export class TextRenderer {
     this._textureBuffer.numItems = textureElements.length / 2;
   }
 
-
   public render(scene: Scene) {
     if (!scene.text) {
       return;
     }
 
-    if(this.isSdfDirty) {
+    if (this.isSdfDirty) {
       this.tinySdf.updateSdf();
     }
 
@@ -263,13 +269,6 @@ export class TextRenderer {
     const gamma = settings.rendererSettings.textRendererSettings.gamma;
 
     this.gl.useProgram(this._shader.program);
-    this.gl.blendFuncSeparate(
-      GL_SRC_ALPHA,
-      GL_ONE_MINUS_SRC_ALPHA,
-      GL_ONE,
-      GL_ONE,
-    );
-    this.gl.enable(GL_BLEND);
     this.gl.enableVertexAttribArray(this._shader.a_pos);
     this.gl.enableVertexAttribArray(this._shader.a_uv);
     const sdfData = new Uint8Array(
