@@ -13,7 +13,7 @@
     "start": "cross-env NODE_ENV=development MINIFY=true rollup -c -w",
     "start:full": "cross-env NODE_ENV=development MINIFY=true ROADROLLER=true rollup -c -w",
     "prebuild": "yarn clean",
-    "build": "cross-env NODE_ENV=production MINIFY=true ROADROLLER=false rollup -c",
+    "build": "cross-env NODE_ENV=production MINIFY=true ROADROLLER=true rollup -c",
     "postbuild": "node ./bin/postbuild.mjs",
     "lint": "eslint ./src --ext .ts",
     "prettier": "prettier --config .prettierrc 'src/**/*.ts' --write",

@@ -112,8 +112,8 @@ export interface TextRendererSettings {
 }
 
 export class TextRenderer {
-  private gl: WebGL2RenderingContext;
-  private tinySdf: TinySDF;
+  private _gl: WebGL2RenderingContext;
+  private _tinySdf: TinySDF;
 
   private _vao: WebGLVertexArrayObject;
   private _shader: Shader;
@@ -125,8 +125,8 @@ export class TextRenderer {
   public isDirty = true;
 
   public constructor(gl: WebGL2RenderingContext) {
-    this.gl = gl;
-    this.tinySdf = new TinySDF({
+    this._gl = gl;
+    this._tinySdf = new TinySDF({
       fontFamily: settings.rendererSettings.textRendererSettings.fontFamily,
       fontWeight: 'bold',
     });
@@ -139,10 +139,10 @@ export class TextRenderer {
     this._texture = gl.createTexture()!;
 
     if (window.devicePixelRatio > 1) {
-      this.gl.canvas.style.width = `${this.gl.canvas.width}px`;
-      this.gl.canvas.style.height = `${this.gl.canvas.height}px`;
-      this.gl.canvas.width *= 2;
-      this.gl.canvas.height *= 2;
+      this._gl.canvas.style.width = `${this._gl.canvas.width}px`;
+      this._gl.canvas.style.height = `${this._gl.canvas.height}px`;
+      this._gl.canvas.width *= 2;
+      this._gl.canvas.height *= 2;
     }
 
     this._vao = gl.createVertexArray()!;
@@ -150,11 +150,11 @@ export class TextRenderer {
   }
 
   private _setupVao() {
-    this.gl.bindVertexArray(this._vao);
-    this.gl.enableVertexAttribArray(this._shader.a_pos);
-    this.gl.enableVertexAttribArray(this._shader.a_uv);
-    this.gl.bindBuffer(GL_ARRAY_BUFFER, this._vertexBuffer);
-    this.gl.vertexAttribPointer(
+    this._gl.bindVertexArray(this._vao);
+    this._gl.enableVertexAttribArray(this._shader.a_pos);
+    this._gl.enableVertexAttribArray(this._shader.a_uv);
+    this._gl.bindBuffer(GL_ARRAY_BUFFER, this._vertexBuffer);
+    this._gl.vertexAttribPointer(
       this._shader.a_pos,
       2,
       GL_DATA_FLOAT,
@@ -163,8 +163,8 @@ export class TextRenderer {
       0,
     );
 
-    this.gl.bindBuffer(GL_ARRAY_BUFFER, this._textureBuffer);
-    this.gl.vertexAttribPointer(
+    this._gl.bindBuffer(GL_ARRAY_BUFFER, this._textureBuffer);
+    this._gl.vertexAttribPointer(
       this._shader.a_uv,
       2,
       GL_DATA_FLOAT,
@@ -172,46 +172,46 @@ export class TextRenderer {
       0,
       0,
     );
-    this.gl.bindVertexArray(null);
+    this._gl.bindVertexArray(null);
   }
 
   private _updateSDFTexture() {
     const sdfData = new Uint8Array(
-      this.tinySdf.ctx.getImageData(
+      this._tinySdf.ctx.getImageData(
         0,
         0,
-        this.tinySdf.ctx.canvas.width,
-        this.tinySdf.ctx.canvas.height,
+        this._tinySdf.ctx.canvas.width,
+        this._tinySdf.ctx.canvas.height,
       ).data,
     );
-    this.gl.activeTexture(GL_TEXTURE1);
-    this.gl.bindTexture(GL_TEXTURE_2D, this._texture);
-    this.gl.texImage2D(
+    this._gl.activeTexture(GL_TEXTURE1);
+    this._gl.bindTexture(GL_TEXTURE_2D, this._texture);
+    this._gl.texImage2D(
       GL_TEXTURE_2D,
       0,
       GL_RGBA,
-      this.tinySdf.ctx.canvas.width,
-      this.tinySdf.ctx.canvas.height,
+      this._tinySdf.ctx.canvas.width,
+      this._tinySdf.ctx.canvas.height,
       0,
       GL_RGBA,
       GL_DATA_UNSIGNED_BYTE,
       sdfData,
     );
-    this.gl.texParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    this.gl.texParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    this.gl.texParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    this.gl.texParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    this.gl.activeTexture(GL_TEXTURE0);
+    this._gl.texParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    this._gl.texParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    this._gl.texParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    this._gl.texParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    this._gl.activeTexture(GL_TEXTURE0);
   }
 
   private _drawText(text: string, size: number) {
     const vertexElements = [];
     const textureElements = [];
 
-    const fontsize = this.tinySdf.fontSize;
+    const fontsize = this._tinySdf.fontSize;
     const buf = fontsize / 8;
-    const width = this.tinySdf.glyphWidth;
-    const height = this.tinySdf.glyphHeight;
+    const width = this._tinySdf.glyphWidth;
+    const height = this._tinySdf.glyphHeight;
     const bx = 0;
     const by = fontsize / 2 + buf;
     const scale = size / fontsize;
@@ -223,8 +223,8 @@ export class TextRenderer {
     const lines = text.split('\n');
 
     const textHeight = lines.length * fontsize * scale * lineHeight;
-    const canvasHeight = this.gl.canvas.height;
-    const canvasWidth = this.gl.canvas.width;
+    const canvasHeight = this._gl.canvas.height;
+    const canvasWidth = this._gl.canvas.width;
     const baseX = canvasWidth * 0.5;
     const baseY = canvasHeight * 0.5 - textHeight * 0.5;
 
@@ -234,7 +234,7 @@ export class TextRenderer {
         .split('')
         .reduce(
           (acc, c) =>
-            acc + this.tinySdf.sdfs[c].glyphAdvance * scale + letterSpacing,
+            acc + this._tinySdf.sdfs[c].glyphAdvance * scale + letterSpacing,
           0,
         );
 
@@ -247,14 +247,14 @@ export class TextRenderer {
         if (char === '\n') {
           break;
         }
-        const current = this.tinySdf.sdfs[char];
+        const current = this._tinySdf.sdfs[char];
         if (char === ' ') {
           pen.x = pen.x + current.glyphAdvance * scale;
           continue;
         }
 
-        const posX = this.tinySdf.sdfs[char].x;
-        const posY = this.tinySdf.sdfs[char].y;
+        const posX = this._tinySdf.sdfs[char].x;
+        const posY = this._tinySdf.sdfs[char].y;
 
         vertexElements.push(
           pen.x + (bx - buf) * scale,
@@ -290,16 +290,16 @@ export class TextRenderer {
       }
     }
 
-    this.gl.bindBuffer(GL_ARRAY_BUFFER, this._vertexBuffer);
-    this.gl.bufferData(
+    this._gl.bindBuffer(GL_ARRAY_BUFFER, this._vertexBuffer);
+    this._gl.bufferData(
       GL_ARRAY_BUFFER,
       new Float32Array(vertexElements),
       GL_STATIC_DRAW,
     );
     this._vertexBuffer.numItems = vertexElements.length / 2;
 
-    this.gl.bindBuffer(GL_ARRAY_BUFFER, this._textureBuffer);
-    this.gl.bufferData(
+    this._gl.bindBuffer(GL_ARRAY_BUFFER, this._textureBuffer);
+    this._gl.bufferData(
       GL_ARRAY_BUFFER,
       new Float32Array(textureElements),
       GL_STATIC_DRAW,
@@ -312,10 +312,10 @@ export class TextRenderer {
       return;
     }
 
-    this.gl.bindVertexArray(this._vao);
+    this._gl.bindVertexArray(this._vao);
 
     if (this.isSdfDirty) {
-      this.tinySdf.updateSdf();
+      this._tinySdf.updateSdf();
       this._updateSDFTexture();
       this.isSdfDirty = false;
     }
@@ -328,12 +328,12 @@ export class TextRenderer {
     const angle = settings.rendererSettings.textRendererSettings.angle;
     const gamma = settings.rendererSettings.textRendererSettings.gamma;
 
-    this._shader.enable(this.gl);
+    this._shader.enable(this._gl);
 
-    this.gl.uniform2f(
+    this._gl.uniform2f(
       this._shader.u_texsize,
-      this.tinySdf.ctx.canvas.width,
-      this.tinySdf.ctx.canvas.height,
+      this._tinySdf.ctx.canvas.width,
+      this._tinySdf.ctx.canvas.height,
     );
 
     if (this.isDirty) {
@@ -343,41 +343,41 @@ export class TextRenderer {
 
     const mvMatrix = create();
     translate(mvMatrix, mvMatrix, [
-      this.gl.canvas.width / 2,
-      this.gl.canvas.height / 2,
+      this._gl.canvas.width / 2,
+      this._gl.canvas.height / 2,
       0,
     ]);
     rotateZ(mvMatrix, mvMatrix, angle);
     translate(mvMatrix, mvMatrix, [
-      -this.gl.canvas.width / 2,
-      -this.gl.canvas.height / 2,
+      -this._gl.canvas.width / 2,
+      -this._gl.canvas.height / 2,
       0,
     ]);
     const mvpMatrix = create();
     multiply(mvpMatrix, this._pMatrix, mvMatrix);
-    this.gl.uniformMatrix4fv(this._shader.u_matrix, false, mvpMatrix);
+    this._gl.uniformMatrix4fv(this._shader.u_matrix, false, mvpMatrix);
 
-    this.gl.uniform1i(this._shader.u_texture, 1);
+    this._gl.uniform1i(this._shader.u_texture, 1);
 
-    this.gl.uniform4fv(
+    this._gl.uniform4fv(
       this._shader.u_color,
       settings.rendererSettings.textRendererSettings.haloColor,
     );
-    this.gl.uniform1f(this._shader.u_buffer, buffer);
-    this.gl.uniform1f(
+    this._gl.uniform1f(this._shader.u_buffer, buffer);
+    this._gl.uniform1f(
       this._shader.u_gamma,
       (gamma * 1.4142) / settings.rendererSettings.textRendererSettings.scale,
     );
-    this.gl.drawArrays(GL_TRIANGLES, 0, this._vertexBuffer.numItems!);
+    this._gl.drawArrays(GL_TRIANGLES, 0, this._vertexBuffer.numItems!);
 
-    this.gl.uniform4fv(
+    this._gl.uniform4fv(
       this._shader.u_color,
       settings.rendererSettings.textRendererSettings.textColor,
     );
-    this.gl.uniform1f(this._shader.u_buffer, 0.75);
-    this.gl.drawArrays(GL_TRIANGLES, 0, this._vertexBuffer.numItems!);
+    this._gl.uniform1f(this._shader.u_buffer, 0.75);
+    this._gl.drawArrays(GL_TRIANGLES, 0, this._vertexBuffer.numItems!);
 
-    this.gl.bindVertexArray(null);
+    this._gl.bindVertexArray(null);
   }
 }
 

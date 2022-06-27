@@ -19,7 +19,7 @@ export class Transport {
   }
 
   public start() {
-    this._handler = setTimeout(this.schedule.bind(this), this._lookAheadTime);
+    this._handler = setTimeout(this._schedule.bind(this), this._lookAheadTime);
   }
 
   public stop() {
@@ -28,11 +28,11 @@ export class Transport {
     }
   }
 
-  private nextNote() {
+  private _nextNote() {
     const secondsPerBeat = 60.0 / this._tempo;
   }
 
-  private schedule() {
+  private _schedule() {
     const time = this._ctx.currentTime;
   }
 }
