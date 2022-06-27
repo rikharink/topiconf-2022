@@ -18,7 +18,15 @@ export type Point2D = Vector2;
 export type Point3D = Vector3;
 export type Resolution = [width: number, height: number];
 
+export type EntityDescription = {
+  entityId: string;
+  position: Vector3;
+  scale: Vector3;
+  rotation: Radian;
+}
+
 export type Slide = {
   text: string;
   background?: string[];
+  entities?: EntityDescription[];
 };

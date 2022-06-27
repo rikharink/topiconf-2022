@@ -96,7 +96,9 @@ if (shouldMinify) {
         drop_debugger: !isDev,
       },
       mangle: {
-        properties: false,
+        properties: {
+          regex: '^_.*',
+        },
         module: true,
         toplevel: true,
       },

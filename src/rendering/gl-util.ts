@@ -2,15 +2,26 @@ import {
   GL_ACTIVE_ATTRIBUTES,
   GL_ACTIVE_UNIFORMS,
   GL_COMPILE_STATUS,
+  GL_CURRENT_PROGRAM,
   GL_FRAGMENT_SHADER,
   GL_LINK_STATUS,
   GL_VERTEX_SHADER,
 } from './gl-constants';
 
-export interface Shader {
+export class Shader {
+  public constructor(program: WebGLProgram) {
+    this.program = program;
+  }
+
   program: WebGLProgram;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
+
+  public enable(gl: WebGL2RenderingContext) {
+    if(gl.getParameter(GL_CURRENT_PROGRAM) !== this.program){
+        gl.useProgram(this.program);
+    }
+  }
 }
 
 export function initShaderProgram(
@@ -36,7 +47,7 @@ export function initShaderProgram(
     );
     return null;
   }
-  const wrapper: Shader = { program };
+  const wrapper: Shader = new Shader(program);
 
   const numAttributes = gl.getProgramParameter(program, GL_ACTIVE_ATTRIBUTES);
   for (let i = 0; i < numAttributes; i++) {

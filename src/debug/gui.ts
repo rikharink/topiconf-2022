@@ -93,7 +93,7 @@ async function showDebugGUI() {
     true,
   );
   aac.onChange(function () {
-    state.game!.renderer.setupCanvas();
+    state.game!.renderer.setup();
   });
   renderingControls.add(
     settings.rendererSettings,

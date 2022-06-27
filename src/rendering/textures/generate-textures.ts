@@ -1,4 +1,4 @@
-import { NormalizedRgbColor } from '../../types';
+import { RgbColor } from '../../types';
 import {
   GL_CLAMP_TO_EDGE,
   GL_DATA_UNSIGNED_BYTE,
@@ -13,21 +13,21 @@ import {
 
 export function generateSolidTexture(
   gl: WebGL2RenderingContext,
-  color: NormalizedRgbColor,
+  color: RgbColor,
 ): WebGLTexture {
   return generateRampTexture(gl, [color]);
 }
 
 export function generateRampTexture(
   gl: WebGL2RenderingContext,
-  colors: NormalizedRgbColor[],
+  colors: RgbColor[],
 ): WebGLTexture {
   const pixels: Uint8Array = new Uint8Array(colors.length * 3);
   for (let i = 0; i < colors.length; i++) {
     const pi = i * 3;
-    pixels[pi + 0] = colors[i][0] * 255;
-    pixels[pi + 1] = colors[i][1] * 255;
-    pixels[pi + 2] = colors[i][2] * 255;
+    pixels[pi + 0] = colors[i][0];
+    pixels[pi + 1] = colors[i][1];
+    pixels[pi + 2] = colors[i][2];
   }
   const texture = gl.createTexture()!;
   gl.bindTexture(GL_TEXTURE_2D, texture);

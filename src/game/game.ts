@@ -1,4 +1,5 @@
 import { stats } from '../debug/gui';
+import { EntityStore } from '../rendering/entities/entity-store';
 import { WebGL2Renderer } from '../rendering/gl-renderer';
 import settings from '../settings';
 import { Milliseconds } from '../types';
@@ -6,24 +7,34 @@ import { InputManager } from './input-manager';
 import { Scene } from './scene';
 
 export class Game {
-  private _running: boolean = true;
-  private _handle: number = 0;
+  private _running = true;
+  private _handle = 0;
   private _then?: number;
-  private _t: number = 0;
-  private _accumulator: number = 0;
+  private _t = 0;
+  private _accumulator = 0;
   private _input: InputManager;
+  public entities: EntityStore;
   public currentScene: Scene;
+  public renderer: WebGL2Renderer;
 
-  constructor(startScene: Scene, public renderer: WebGL2Renderer) {
+  constructor(start: Scene, renderer: WebGL2Renderer) {
+    this.renderer = renderer;
     this._input = new InputManager(this.renderer.canvas);
-    this.currentScene = startScene;
+    this.entities = new EntityStore();
+    this.currentScene = start;
+
+    this._registerEntities();
   }
 
-  loop(now: Milliseconds) {
+  private _registerEntities() {
+    //TODO
+  }
+
+  private _loop(now: Milliseconds) {
     if (process.env.NODE_ENV === 'development' && stats.begin) {
       stats.begin();
     }
-    this._handle = requestAnimationFrame(this.loop.bind(this));
+    this._handle = requestAnimationFrame(this._loop.bind(this));
     if (this._then) {
       const ft = now - this._then;
       if (ft > 1000) {
@@ -39,6 +50,7 @@ export class Game {
         this._accumulator -= settings.dt;
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const alpha = this._accumulator / settings.dt;
       //DO VARIABLE STEP STUFF
 
@@ -57,6 +69,7 @@ export class Game {
     if (next && this.currentScene.next) {
       this.currentScene = this.currentScene.next;
       this.renderer.text_renderer.isDirty = true;
+      this.renderer.isDirty = true;
     }
 
     const previous =
@@ -64,6 +77,7 @@ export class Game {
     if (previous && this.currentScene.previous) {
       this.currentScene = this.currentScene.previous;
       this.renderer.text_renderer.isDirty = true;
+      this.renderer.isDirty = true;
     }
 
     this._input.tick();
@@ -71,7 +85,7 @@ export class Game {
 
   public start() {
     this._running = true;
-    this._handle = requestAnimationFrame(this.loop.bind(this));
+    this._handle = requestAnimationFrame(this._loop.bind(this));
   }
 
   public stop() {

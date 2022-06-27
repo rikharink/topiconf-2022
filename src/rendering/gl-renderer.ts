@@ -14,6 +14,7 @@ import {
   GL_ONE_MINUS_SRC_ALPHA,
   GL_SRC_ALPHA,
   GL_TEXTURE0,
+  GL_TEXTURE2,
   GL_TEXTURE_2D,
   GL_TRIANGLE_FAN,
 } from './gl-constants';
@@ -22,6 +23,7 @@ export class WebGL2Renderer {
   public gl!: WebGL2RenderingContext;
   public text_renderer: TextRenderer;
   private _shader!: Shader;
+  public isDirty = true;
 
   public get canvas(): HTMLCanvasElement {
     return this.gl.canvas;
@@ -40,11 +42,11 @@ export class WebGL2Renderer {
       ...defaultTextRendererSettings,
       ...textRendererSettings,
     };
-    this.setupCanvas();
+    this.setup();
     this.text_renderer = new TextRenderer(this.gl);
   }
 
-  public setupCanvas() {
+  public setup() {
     let parent: HTMLElement | undefined | null;
     const c = document.getElementById('g');
     if (c) {
@@ -95,14 +97,18 @@ export class WebGL2Renderer {
     if (settings.rendererSettings.resizeToScreen) {
       this._resizeToScreen();
     }
-
-    this.gl.useProgram(this._shader.program);
+    this._shader.enable(this.gl);
     this.gl.clear(settings.rendererSettings.clearMask);
-    if (scene.bg_texture) {
-      this.gl.activeTexture(GL_TEXTURE0);
-      this.gl.bindTexture(GL_TEXTURE_2D, scene.bg_texture);
-      this.gl.uniform1i(this._shader.sampler, 0);
+    if (this.isDirty) {
+      if (scene.bg_texture) {
+        this.gl.activeTexture(GL_TEXTURE2);
+        this.gl.bindTexture(GL_TEXTURE_2D, scene.bg_texture);
+        this.gl.activeTexture(GL_TEXTURE0);
+        this.gl.uniform1i(this._shader.sampler, 2);
+      }
+      this.isDirty = false;
     }
+
     this.gl.drawArrays(GL_TRIANGLE_FAN, 0, 3);
     this.text_renderer.render(scene);
   }
