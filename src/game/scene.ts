@@ -3,10 +3,11 @@ import { generateRampTexture } from '../rendering/textures/generate-textures';
 import { RgbColor } from '../types';
 
 export class Scene {
+  public id = 0;
   public previous?: Scene;
   public next?: Scene;
   public text: string;
-  public entities?: Entity[];
+  public root?: Entity[];
   private _bg_colors: RgbColor[];
   private _bg_texture?: WebGLTexture;
   private _gl: WebGL2RenderingContext;
@@ -34,7 +35,7 @@ export class Scene {
   ) {
     this._gl = gl;
     this.text = text;
-    this.entities = entities;
+    this.root = entities;
     this.bg_colors = this._bg_colors = background;
     this.previous = previous;
     this.next = next;
@@ -52,6 +53,7 @@ export class Scene {
       entities,
       this,
     );
+    child.id = this.id + 1;
     this.next = child;
     return child;
   }

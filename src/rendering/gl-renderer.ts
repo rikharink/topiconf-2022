@@ -5,11 +5,16 @@ import settings, {
 import { RendererSettings } from './renderer-settings';
 import frag from './shaders/default.frag.glsl';
 import vert from './shaders/triangle.vert.glsl';
-import { initShaderProgram, Shader } from './gl-util';
+import { initShaderProgram } from './gl-util';
+import { Shader } from './shader';
 import { TextRenderer, TextRendererSettings } from './text-renderer';
 import { Scene } from '../game/scene';
 import {
   GL_BLEND,
+  GL_CULL_FACE,
+  GL_DEPTH_BUFFER_BIT,
+  GL_DEPTH_TEST,
+  GL_LEQUAL,
   GL_ONE,
   GL_ONE_MINUS_SRC_ALPHA,
   GL_SRC_ALPHA,
@@ -18,16 +23,15 @@ import {
   GL_TEXTURE_2D,
   GL_TRIANGLE_FAN,
 } from './gl-constants';
+import { Camera } from './camera/camera';
+import { RgbaColor } from '../types';
+import { arrayEquals } from '../util';
 
 export class WebGL2Renderer {
-  public gl!: WebGL2RenderingContext;
+  public gl: WebGL2RenderingContext;
   public text_renderer: TextRenderer;
   private _shader!: Shader;
   public isDirty = true;
-
-  public get canvas(): HTMLCanvasElement {
-    return this.gl.canvas;
-  }
 
   constructor(
     rendererSettings?: Partial<RendererSettings>,
@@ -42,11 +46,11 @@ export class WebGL2Renderer {
       ...defaultTextRendererSettings,
       ...textRendererSettings,
     };
-    this.setup();
+    this.gl = this.setup();
     this.text_renderer = new TextRenderer(this.gl);
   }
 
-  public setup() {
+  public setup(): WebGL2RenderingContext {
     let parent: HTMLElement | undefined | null;
     const c = document.getElementById('g');
     if (c) {
@@ -58,70 +62,101 @@ export class WebGL2Renderer {
       parent.appendChild(canvas);
     }
     canvas.id = 'g';
-    this.gl = canvas.getContext('webgl2', {
+    const gl = canvas.getContext('webgl2', {
       antialias: settings.rendererSettings.antialias,
     })!;
     const [width, height] = settings.rendererSettings.resolution;
-    this.setAntialias();
-    this.setResolution(width, height);
-    this._shader = initShaderProgram(this.gl, vert, frag)!;
-    this.gl.blendFuncSeparate(
-      GL_SRC_ALPHA,
-      GL_ONE_MINUS_SRC_ALPHA,
-      GL_ONE,
-      GL_ONE,
-    );
-    this.gl.enable(GL_BLEND);
+    this.setAntialias(gl);
+    this.setResolution(gl, width, height);
+    this._shader = initShaderProgram(gl, vert, frag)!;
+    gl.blendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
+    gl.enable(GL_BLEND);
+    gl.enable(GL_CULL_FACE);
+    gl.enable(GL_DEPTH_TEST);
+    gl.depthFunc(GL_LEQUAL);
 
     const color = settings.rendererSettings.clearColor;
-    this.gl.clearColor(color[0], color[1], color[2], color[3]);
+    gl.clearColor(color[0], color[1], color[2], color[3]);
+    this.gl = gl;
+    this.isDirty = true;
+    return gl;
   }
 
-  public setResolution(width: number, height: number): void {
-    this.canvas.width = width;
-    this.canvas.height = height;
-    this.gl.viewport(0, 0, width, height);
+  public setResolution(
+    gl: WebGL2RenderingContext,
+    width: number,
+    height: number,
+  ): void {
+    gl.canvas.width = width;
+    gl.canvas.height = height;
+    gl.viewport(0, 0, width, height);
   }
 
-  public setAntialias(): void {
+  public setAntialias(gl: WebGL2RenderingContext): void {
     if (settings.rendererSettings.antialias) {
-      this.gl.canvas.classList.remove('no-aa');
-      this.gl.canvas.classList.add('aa');
+      gl.canvas.classList.remove('no-aa');
+      gl.canvas.classList.add('aa');
     } else {
-      this.gl.canvas.classList.remove('aa');
-      this.gl.canvas.classList.add('no-aa');
+      gl.canvas.classList.remove('aa');
+      gl.canvas.classList.add('no-aa');
     }
   }
 
-  public render(scene: Scene) {
+  _prevColor?: RgbaColor;
+  public render(scene: Scene, camera: Camera) {
+    const gl = this.gl;
     if (settings.rendererSettings.resizeToScreen) {
-      this._resizeToScreen();
+      this._resizeToScreen(gl);
     }
-    this._shader.enable(this.gl);
-    this.gl.clear(settings.rendererSettings.clearMask);
+    this._shader.enable(gl);
+    const color = settings.rendererSettings.clearColor;
+    if (!this._prevColor || !arrayEquals(color, this._prevColor)) {
+      gl.clearColor(color[0], color[1], color[2], color[3]);
+      this._prevColor = [...color];
+    }
+    gl.clear(settings.rendererSettings.clearMask | GL_DEPTH_BUFFER_BIT);
+    this._renderBackground(gl, scene);
+    this._renderEntities(gl, scene, camera);
+    this._renderText(gl, scene);
+  }
+
+  private _renderBackground(gl: WebGL2RenderingContext, scene: Scene) {
     if (this.isDirty) {
       if (scene.bg_texture) {
-        this.gl.activeTexture(GL_TEXTURE2);
-        this.gl.bindTexture(GL_TEXTURE_2D, scene.bg_texture);
-        this.gl.activeTexture(GL_TEXTURE0);
-        this.gl.uniform1i(this._shader.sampler, 2);
+        gl.activeTexture(GL_TEXTURE2);
+        gl.bindTexture(GL_TEXTURE_2D, scene.bg_texture);
+        gl.activeTexture(GL_TEXTURE0);
+        gl.uniform1i(this._shader.sampler, 2);
       }
       this.isDirty = false;
     }
-
-    this.gl.drawArrays(GL_TRIANGLE_FAN, 0, 3);
-    this.text_renderer.render(scene);
+    gl.drawArrays(GL_TRIANGLE_FAN, 0, 3);
   }
 
-  private _resizeToScreen(): boolean {
+  private _renderEntities(
+    gl: WebGL2RenderingContext,
+    scene: Scene,
+    camera: Camera,
+  ) {
+    scene.root?.forEach((e) => {
+      e.updateWorldMatrix();
+      e.render(gl, camera.pv);
+    });
+  }
+
+  private _renderText(gl: WebGL2RenderingContext, scene: Scene) {
+    this.text_renderer.render(gl, scene);
+  }
+
+  private _resizeToScreen(gl: WebGL2RenderingContext): boolean {
     const dpr = settings.rendererSettings.supportHiDpi
       ? window.devicePixelRatio || 1
       : 1;
-    const dw = this.canvas.clientWidth * dpr;
-    const dh = this.canvas.clientHeight * dpr;
+    const dw = gl.canvas.clientWidth * dpr;
+    const dh = gl.canvas.clientHeight * dpr;
 
-    if (this.canvas.width !== dw || this.canvas.height != dh) {
-      this.setResolution(dw, dh);
+    if (gl.canvas.width !== dw || gl.canvas.height != dh) {
+      this.setResolution(gl, dw, dh);
       return true;
     }
     return false;

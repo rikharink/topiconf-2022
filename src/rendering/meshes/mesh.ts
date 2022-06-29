@@ -1,10 +1,13 @@
 import { Vector2 } from '../../math/vector2';
 import { add, cross, normalize, subtract, Vector3 } from '../../math/vector3';
+import { Vector4 } from '../../math/vector4';
 
 export class Mesh {
   public vertices: Vector3[] = [];
   public triangles: number[] = [];
   public normals: Vector3[] = [];
+  public colors: Vector4[] = [];
+
   public uvs: Vector2[] = [];
   private _vertexTriangleMap: Map<number, Array<number>> = new Map<
     number,
@@ -23,7 +26,7 @@ export class Mesh {
         throw Error(`Vertex with index ${i} is not part of any triangle`);
       }
       const normal: Vector3 = [0, 0, 0];
-      for (let ti of triangles) {
+      for (const ti of triangles) {
         const p1 = this.vertices[this.triangles[ti]];
         const p2 = this.vertices[this.triangles[ti + 1]];
         const p3 = this.vertices[this.triangles[ti + 2]];

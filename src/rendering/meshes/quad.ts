@@ -9,14 +9,14 @@ interface QuadOptions {
 }
 
 export class Quad extends Mesh {
-  constructor(options?: Partial<QuadOptions>) {
+  constructor(options: Partial<QuadOptions> = {}) {
     super();
     const {
       p1 = [-1, -1, 0],
       p2 = [1, -1, 0],
       p3 = [-1, 1, 0],
       p4 = [1, 1, 0],
-    } = options ?? {};
+    } = options;
     this.vertices = [p1, p2, p3, p4];
     this.triangles = [0, 1, 2, 1, 3, 2];
     this.uvs = [
@@ -24,6 +24,12 @@ export class Quad extends Mesh {
       [1, 1],
       [0, 0],
       [1, 0],
+    ];
+    this.colors = [
+      [1, 0, 0, 1],
+      [0, 1, 0, 1],
+      [0, 0, 1, 1],
+      [1, 0, 1, 1],
     ];
     this.updateTriangleMap();
     this.recalculateNormals();

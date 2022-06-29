@@ -3,17 +3,29 @@ import { showDebugGUI } from './debug/gui';
 import { Game } from './game/game';
 import { Scene } from './game/scene';
 import { WebGL2Renderer } from './rendering/gl-renderer';
-import { injectStyle } from './rendering/style';
+import { injectHead } from './inject';
 import state from './state';
 import slides from './slides.json';
 import { EntityDescription, RgbColor, Slide } from './types';
 import { hexToRgb } from './math/color';
 import settings from './settings';
 import { Entity } from './rendering/entities/entity';
+import { EntityStore } from './rendering/entities/entity-store';
+import { Quad } from './rendering/meshes/quad';
+import { DefaultMaterial } from './rendering/materials/default-material';
+import { Triangle } from './rendering/meshes/triangle';
 
-injectStyle();
+injectHead();
 const renderer = new WebGL2Renderer({});
-document.body.appendChild(renderer.canvas);
+document.body.appendChild(renderer.gl.canvas);
+
+const entities = new EntityStore();
+const defaultMaterial = new DefaultMaterial(renderer.gl);
+entities.register(
+  new Entity(renderer.gl, 's1', new Quad(), defaultMaterial),
+  new Entity(renderer.gl, 't1', new Triangle(), defaultMaterial),
+);
+
 state.game = new Game(getSlides(), renderer);
 state.game.start();
 
@@ -26,15 +38,11 @@ function getText(text: string | string[]) {
 }
 
 function getEntity(e: EntityDescription): Entity {
-  const entity = state.game!.entities.get(e.entityId);
+  const entity = entities.get(e.entityId);
   if (!entity) {
     throw Error(`entity with id ${e.entityId} was not found!`);
   }
-
-  entity.transposition = e.position;
-  entity.scale = e.scale;
-  entity.rotation = e.rotation;
-
+  entity.updateTRS(e.translation, e.rotation, e.scale);
   return entity;
 }
 

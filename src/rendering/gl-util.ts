@@ -2,27 +2,14 @@ import {
   GL_ACTIVE_ATTRIBUTES,
   GL_ACTIVE_UNIFORMS,
   GL_COMPILE_STATUS,
-  GL_CURRENT_PROGRAM,
   GL_FRAGMENT_SHADER,
   GL_LINK_STATUS,
   GL_VERTEX_SHADER,
+  GL_DYNAMIC_DRAW,
+  GL_STATIC_DRAW,
+  GL_DATA_FLOAT,
 } from './gl-constants';
-
-export class Shader {
-  public constructor(program: WebGLProgram) {
-    this.program = program;
-  }
-
-  program: WebGLProgram;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: string]: any;
-
-  public enable(gl: WebGL2RenderingContext) {
-    if(gl.getParameter(GL_CURRENT_PROGRAM) !== this.program){
-        gl.useProgram(this.program);
-    }
-  }
-}
+import { Shader } from './shader';
 
 export function initShaderProgram(
   gl: WebGL2RenderingContext,
@@ -83,4 +70,31 @@ function loadShader(
     return null;
   }
   return shader;
+}
+
+export function setupAttributeBuffer(
+  gl: WebGL2RenderingContext,
+  shader: Shader,
+  attribute: string,
+  target: number,
+  isDynamic: boolean,
+  data: BufferSource | ArrayBufferView | null,
+  size: number,
+  stride = 0,
+  offset = 0,
+): WebGLBuffer {
+  const buffer = gl.createBuffer()!;
+  const attributeLocation = shader[attribute];
+  gl.bindBuffer(target, buffer);
+  gl.bufferData(target, data, isDynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+  gl.vertexAttribPointer(
+    attributeLocation,
+    size,
+    GL_DATA_FLOAT,
+    false,
+    stride,
+    offset,
+  );
+  gl.enableVertexAttribArray(attributeLocation);
+  return buffer;
 }

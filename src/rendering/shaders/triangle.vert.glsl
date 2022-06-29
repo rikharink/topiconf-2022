@@ -1,7 +1,9 @@
 #version 300 es
 precision highp float;
 
-out vec4 v_pos, v_col, v_uv, v_normal;
+out vec4 v_pos, v_col;
+out vec2 v_uv;
+out vec3 v_normal;
 
 void main() {
     float x = float((gl_VertexID & 1) << 2);

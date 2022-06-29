@@ -87,14 +87,6 @@ async function showDebugGUI() {
   );
   ls.onChange(markDirty);
   const renderingControls = controls.addFolder('rendering');
-  const aac = renderingControls.add(
-    settings.rendererSettings,
-    'antialias',
-    true,
-  );
-  aac.onChange(function () {
-    state.game!.renderer.setup();
-  });
   renderingControls.add(
     settings.rendererSettings,
     'supportHiDpi',
@@ -158,7 +150,7 @@ function createStatsGUI() {
 
 function createSpectorGUI() {
   spector = new SPECTOR.Spector();
-  spector.spyCanvas(state.game!.renderer.canvas);
+  spector.spyCanvas(state.game!.renderer.gl.canvas);
   spector.displayUI();
 }
 

@@ -1,7 +1,13 @@
 [
   {
     "text": "JS13K: SO YOU WANT TO BUILD A TINY GAME?",
-    "background": ["#F19A13", "#E74043", "#982A7C", "#00A0E3"]
+    "background": ["#F19A13", "#E74043", "#982A7C", "#00A0E3"],
+    "entities": [
+      {
+        "entityId": "t1",
+        "translation": [0, 0, -6]
+      }
+    ]
   },
   {
     "text": "WHAT IS JS13K?"

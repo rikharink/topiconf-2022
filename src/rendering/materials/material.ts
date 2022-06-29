@@ -1,9 +1,9 @@
-import { Shader } from "../gl-util";
+import { Shader } from '../shader';
 
-export class Material {
-    public shader: Shader;
+export abstract class Material {
+  public shader: Shader;
 
-    public constructor(shader: Shader){
-        this.shader = shader;
-    }
+  public constructor(shader: Shader) {
+    this.shader = shader;
+  }
 }

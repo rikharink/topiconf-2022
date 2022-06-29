@@ -25,5 +25,5 @@ export type Matrix3x3 = [
   m12: number,
   m20: number,
   m21: number,
-  m22: number
+  m22: number,
 ];

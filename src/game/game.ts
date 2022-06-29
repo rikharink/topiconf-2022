@@ -1,5 +1,7 @@
 import { stats } from '../debug/gui';
-import { EntityStore } from '../rendering/entities/entity-store';
+import { DEGREE_TO_RADIAN } from '../math/util';
+import { Camera } from '../rendering/camera/camera';
+import { PerspectiveCamera } from '../rendering/camera/perspective-camera';
 import { WebGL2Renderer } from '../rendering/gl-renderer';
 import settings from '../settings';
 import { Milliseconds } from '../types';
@@ -13,24 +15,25 @@ export class Game {
   private _t = 0;
   private _accumulator = 0;
   private _input: InputManager;
-  public entities: EntityStore;
+  private _camera: Camera;
   public currentScene: Scene;
   public renderer: WebGL2Renderer;
 
   constructor(start: Scene, renderer: WebGL2Renderer) {
     this.renderer = renderer;
-    this._input = new InputManager(this.renderer.canvas);
-    this.entities = new EntityStore();
+    this._input = new InputManager(this.renderer.gl.canvas);
     this.currentScene = start;
-
-    this._registerEntities();
-  }
-
-  private _registerEntities() {
-    //TODO
+    this._camera = new PerspectiveCamera(
+      45 * DEGREE_TO_RADIAN,
+      settings.rendererSettings.resolution[0] /
+        settings.rendererSettings.resolution[1],
+      0.1,
+      100.0,
+    );
   }
 
   private _loop(now: Milliseconds) {
+    this._ensureCorrectSlide();
     if (process.env.NODE_ENV === 'development' && stats.begin) {
       stats.begin();
     }
@@ -55,7 +58,7 @@ export class Game {
       //DO VARIABLE STEP STUFF
 
       this._processInput();
-      this.renderer.render(this.currentScene);
+      this.renderer.render(this.currentScene, this._camera);
     }
     this._then = now;
     if (process.env.NODE_ENV === 'development') {
@@ -63,21 +66,39 @@ export class Game {
     }
   }
 
+  private _ensureCorrectSlide() {
+    const hash = Number(window.location.hash.slice(1));
+    if (hash !== this.currentScene.id) {
+      if (hash > this.currentScene.id) {
+        while (this.currentScene.next && this.currentScene.id != hash) {
+          this._setCurrentScene(this.currentScene.next);
+        }
+      } else {
+        while (this.currentScene.previous && this.currentScene.id != hash) {
+          this._setCurrentScene(this.currentScene.previous);
+        }
+      }
+    }
+  }
+
+  private _setCurrentScene(scene: Scene) {
+    this.currentScene = scene;
+    this.renderer.text_renderer.isDirty = true;
+    this.renderer.isDirty = true;
+    window.location.hash = this.currentScene.id.toString();
+  }
+
   private _processInput() {
     const next =
       this._input.hasKeyUp('ArrowRight') || this._input.hasPointerUp(0);
     if (next && this.currentScene.next) {
-      this.currentScene = this.currentScene.next;
-      this.renderer.text_renderer.isDirty = true;
-      this.renderer.isDirty = true;
+      this._setCurrentScene(this.currentScene.next);
     }
 
     const previous =
       this._input.hasKeyUp('ArrowLeft') || this._input.hasPointerUp(2);
     if (previous && this.currentScene.previous) {
-      this.currentScene = this.currentScene.previous;
-      this.renderer.text_renderer.isDirty = true;
-      this.renderer.isDirty = true;
+      this._setCurrentScene(this.currentScene.previous);
     }
 
     this._input.tick();

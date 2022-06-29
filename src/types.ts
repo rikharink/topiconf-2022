@@ -20,10 +20,10 @@ export type Resolution = [width: number, height: number];
 
 export type EntityDescription = {
   entityId: string;
-  position: Vector3;
-  scale: Vector3;
-  rotation: Radian;
-}
+  translation?: Vector3;
+  rotation?: [Radian, Radian, Radian];
+  scale?: Vector3;
+};
 
 export type Slide = {
   text: string;
