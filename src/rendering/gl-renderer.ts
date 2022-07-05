@@ -26,6 +26,7 @@ import {
 import { Camera } from './camera/camera';
 import { RgbaColor } from '../types';
 import { arrayEquals } from '../util';
+import { generateSolidTexture } from './textures/generate-textures';
 
 export class WebGL2Renderer {
   public gl: WebGL2RenderingContext;
@@ -74,6 +75,7 @@ export class WebGL2Renderer {
     gl.enable(GL_CULL_FACE);
     gl.enable(GL_DEPTH_TEST);
     gl.depthFunc(GL_LEQUAL);
+    gl.clearDepth(1.0);
 
     const color = settings.rendererSettings.clearColor;
     gl.clearColor(color[0], color[1], color[2], color[3]);
@@ -126,7 +128,10 @@ export class WebGL2Renderer {
         gl.activeTexture(GL_TEXTURE2);
         gl.bindTexture(GL_TEXTURE_2D, scene.bg_texture);
         gl.activeTexture(GL_TEXTURE0);
+        gl.uniform1f(this._shader.u_mix, 0);
         gl.uniform1i(this._shader.sampler, 2);
+      } else {
+        gl.uniform1f(this._shader.u_mix, 1);
       }
       this.isDirty = false;
     }
@@ -140,7 +145,7 @@ export class WebGL2Renderer {
   ) {
     scene.root?.forEach((e) => {
       e.updateWorldMatrix();
-      e.render(gl, camera.pv);
+      e.render(gl, camera);
     });
   }
 

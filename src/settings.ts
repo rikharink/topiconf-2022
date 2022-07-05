@@ -18,11 +18,11 @@ export const defaultTextRendererOptions: TextRendererSettings = {
 };
 
 export const defaultRendererSettings: RendererSettings = {
-  clearColor: [1, 1, 1, 1],
+  clearColor: [0, 0, 0, 1],
   clearMask: GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT,
   supportHiDpi: false,
   resizeToScreen: false,
-  resolution: [2560, 1440],
+  resolution: [1920, 1080],
   antialias: true,
   textRendererSettings: defaultTextRendererOptions,
 };

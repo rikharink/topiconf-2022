@@ -8,8 +8,5 @@ uniform sampler2D sampler;
 out vec4 c;
 
 void main() {
-    //c = vec4(v_normal.r, v_normal.g, v_normal.b, 1.);
-    //v_col = vec4(v_uv.r, v_uv.g, 0., 1.);
-    c = mix(texture(sampler, v_uv), v_col, u_mix);
-    // c = v_col;
+    c = vec4(v_uv.r, v_uv.g, 0., 1.);
 }

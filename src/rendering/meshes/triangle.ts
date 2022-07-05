@@ -17,7 +17,6 @@ export class Triangle extends Mesh {
       normalize(v[0], -1, 1),
       1 - normalize(v[1], -1, 1),
     ]);
-    this.updateTriangleMap();
     this.recalculateNormals();
     this.colors = [
       [1, 0, 0, 1],

@@ -3,6 +3,7 @@ import { copy, create, Matrix4x4, multiply } from '../../math/matrix4x4';
 import { from_euler } from '../../math/quaternion';
 import { Vector3, copy as copyv3 } from '../../math/vector3';
 import { Radian } from '../../types';
+import { Camera } from '../camera/camera';
 import {
   GL_ARRAY_BUFFER,
   GL_DATA_UNSIGNED_SHORT,
@@ -16,10 +17,7 @@ import {
 import { setupAttributeBuffer } from '../gl-util';
 import { Material } from '../materials/material';
 import { Mesh } from '../meshes/mesh';
-import {
-  generateRampTexture,
-  generateSolidTexture,
-} from '../textures/generate-textures';
+import { generateRampTexture } from '../textures/generate-textures';
 import { RotationTranslationScaleSource } from './rotation-translation-scale-source';
 
 export class Entity {
@@ -28,7 +26,7 @@ export class Entity {
   public isDirty = true;
   private _mesh: Mesh;
   private _material: Material;
-  private _vao: WebGLVertexArrayObject;
+  private _vao!: WebGLVertexArrayObject;
   private _isDynamic: boolean;
   private _trianglesBuffer!: WebGLBuffer;
   private _rts: RotationTranslationScaleSource =
@@ -61,8 +59,7 @@ export class Entity {
         .reverse()
         .map((c) => hexToRgb(c)),
     );
-    this.updateTRS(translation, rotation, scale);
-    this._vao = gl.createVertexArray()!;
+    //this.updateTRS(translation, rotation, scale);
     this._setupVao(gl);
   }
 
@@ -83,6 +80,7 @@ export class Entity {
   }
 
   private _setupVao(gl: WebGL2RenderingContext): void {
+    this._vao = gl.createVertexArray()!;
     gl.bindVertexArray(this._vao);
     setupAttributeBuffer(
       gl,
@@ -140,12 +138,14 @@ export class Entity {
     gl.bindVertexArray(null);
   }
 
-  public render(gl: WebGL2RenderingContext, projection: Matrix4x4) {
+  public render(gl: WebGL2RenderingContext, camera: Camera) {
     this._material.shader.enable(gl);
 
     gl.bindVertexArray(this._vao);
-    gl.uniformMatrix4fv(this._material.shader.mv, false, this.w);
-    gl.uniformMatrix4fv(this._material.shader.p, false, projection);
+    const mv = create();
+    multiply(mv, this.w, camera.v);
+    gl.uniformMatrix4fv(this._material.shader.mv, false, mv);
+    gl.uniformMatrix4fv(this._material.shader.p, false, camera.p);
     gl.uniform1f(this._material.shader.u_mix, 0);
 
     gl.activeTexture(GL_TEXTURE0);
@@ -179,7 +179,8 @@ export class Entity {
   }
 
   public updateWorldMatrix() {
-    this._rts.getMatrix(this._l);
+    this._l = create();
+    // this._rts.getMatrix(this._l);
     if (this._parent) {
       multiply(this.w, this._l, this._parent.w);
     } else {

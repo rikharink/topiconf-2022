@@ -14,12 +14,8 @@ export class Mesh {
     Array<number>
   >();
 
-  public addTriangles(...triangleIndices: number[]) {
-    this.triangles.push(...triangleIndices);
-    this.updateTriangleMap();
-  }
-
   public recalculateNormals(): void {
+    this._updateTriangleMap();
     for (let i = 0; i < this.vertices.length; i++) {
       const triangles = this._vertexTriangleMap.get(i);
       if (triangles === undefined) {
@@ -36,7 +32,7 @@ export class Mesh {
     }
   }
 
-  public updateTriangleMap(): void {
+  private _updateTriangleMap(): void {
     this._vertexTriangleMap.clear();
     for (let i = 0; i < this.triangles.length; i++) {
       const vertex = this.triangles[i];

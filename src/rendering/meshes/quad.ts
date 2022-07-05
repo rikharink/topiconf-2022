@@ -31,7 +31,6 @@ export class Quad extends Mesh {
       [0, 0, 1, 1],
       [1, 0, 1, 1],
     ];
-    this.updateTriangleMap();
     this.recalculateNormals();
   }
 }

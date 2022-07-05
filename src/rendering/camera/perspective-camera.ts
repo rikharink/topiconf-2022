@@ -28,6 +28,7 @@ export class PerspectiveCamera implements Camera {
 
   private _buildMatrix(): void {
     perspective(this.p, this._fov, this._aspectRatio, this._zNear, this._zFar);
+    this._buildProjectionViewMatrix();
   }
 
   private _buildProjectionViewMatrix(): void {

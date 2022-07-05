@@ -14,6 +14,8 @@ import { EntityStore } from './rendering/entities/entity-store';
 import { Quad } from './rendering/meshes/quad';
 import { DefaultMaterial } from './rendering/materials/default-material';
 import { Triangle } from './rendering/meshes/triangle';
+import { Box } from './rendering/meshes/box';
+import { UVMaterial } from './rendering/materials/uv-material';
 
 injectHead();
 const renderer = new WebGL2Renderer({});
@@ -21,9 +23,11 @@ document.body.appendChild(renderer.gl.canvas);
 
 const entities = new EntityStore();
 const defaultMaterial = new DefaultMaterial(renderer.gl);
+const uvMaterial = new UVMaterial(renderer.gl);
 entities.register(
-  new Entity(renderer.gl, 's1', new Quad(), defaultMaterial),
+  new Entity(renderer.gl, 'q1', new Quad(), uvMaterial),
   new Entity(renderer.gl, 't1', new Triangle(), defaultMaterial),
+  new Entity(renderer.gl, 'b1', new Box(), defaultMaterial),
 );
 
 state.game = new Game(getSlides(), renderer);
@@ -60,14 +64,14 @@ function getSlides(): Scene {
   const r = new Scene(
     renderer.gl,
     getText(first.text),
-    bg?.map(hexToRgb) ?? [defaultColor],
+    bg?.map(hexToRgb),
     first.entities?.map(getEntity),
   );
   let p = r;
   for (const s of ls.slice(1)) {
     p = p.addNext(
       getText(s.text),
-      s.background?.map(hexToRgb) ?? [defaultColor],
+      s.background?.map(hexToRgb),
       s.entities?.map(getEntity),
     );
   }

@@ -19,6 +19,7 @@ async function showDebugGUI() {
 
   const markDirty = function () {
     state.game!.renderer.text_renderer.isDirty = true;
+    state.game!.renderer.isDirty = true;
   };
 
   const textControls = controls.addFolder('text');
@@ -98,7 +99,11 @@ async function showDebugGUI() {
     'resizeToScreen',
     settings.rendererSettings.resizeToScreen,
   );
-  renderingControls.addColor(settings.rendererSettings, 'clearColor');
+  const clearColor = renderingControls.addColor(
+    settings.rendererSettings,
+    'clearColor',
+  );
+  clearColor.onChange(markDirty);
 
   const debugControls = controls.addFolder('debug menus');
 

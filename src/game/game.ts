@@ -1,6 +1,7 @@
 import { stats } from '../debug/gui';
 import { DEGREE_TO_RADIAN } from '../math/util';
 import { Camera } from '../rendering/camera/camera';
+import { Camera3D } from '../rendering/camera/camera-3d';
 import { PerspectiveCamera } from '../rendering/camera/perspective-camera';
 import { WebGL2Renderer } from '../rendering/gl-renderer';
 import settings from '../settings';
@@ -23,13 +24,7 @@ export class Game {
     this.renderer = renderer;
     this._input = new InputManager(this.renderer.gl.canvas);
     this.currentScene = start;
-    this._camera = new PerspectiveCamera(
-      45 * DEGREE_TO_RADIAN,
-      settings.rendererSettings.resolution[0] /
-        settings.rendererSettings.resolution[1],
-      0.1,
-      100.0,
-    );
+    this._camera = new Camera3D([0, 0, 6], [0, 0, 0]);
   }
 
   private _loop(now: Milliseconds) {

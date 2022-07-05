@@ -23,23 +23,18 @@ function injectStyle() {
   const style = document.createElement('style');
   style.innerText = `
     body,
-        html {
-          padding: 0;
+        html, body {
           margin: 0;
-        }
-  
-        body {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
+          background-color: black;
+          display: flex;
+          justify-content: center;
+          align-items: center;
           height: 100%;
-          overflow: hidden;
         }
   
         canvas {
-          width: 100%;
-          height: 100%;
+          width: 100vw;
+          outline: 0;
         }
         
         .no-aa {
@@ -51,6 +46,13 @@ function injectStyle() {
   
         .aa {
           image-rendering: auto;
+        }
+
+        @media (min-aspect-ratio: 16/9) {
+          canvas {
+            height: 100vh;
+            width: auto;
+          }
         }
     `;
   document.head.appendChild(style);

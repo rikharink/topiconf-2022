@@ -4,8 +4,8 @@
     "background": ["#F19A13", "#E74043", "#982A7C", "#00A0E3"],
     "entities": [
       {
-        "entityId": "t1",
-        "translation": [0, 0, -6]
+        "entityId": "q1",
+        "translation": [0, 0, 0]
       }
     ]
   },
@@ -13,12 +13,69 @@
     "text": "WHAT IS JS13K?"
   },
   {
+    "text": "THE MAIN RULES OF THE GAMEJAM"
+  },
+  {
     "text": [
-      "THE MAIN RULES:",
-      "",
-      "* IT HAS TO BE A WEBGAME",
-      "* ZIPPED NO BIGGER THAN 13KB"
+      "PACKAGE SIZE BELOW 13 KIBIBYTES",
+      "(13 * 1024 BYTES)",
+      "NO EXTERNAL RESOURCES ALLOWED"
     ]
+  },
+  {
+    "text": ["HAS TO RUN IN LATEST", "FIREFOX AND CHROME"]
+  },
+  {
+    "text": "NEW CONTENT ONLY"
+  },
+  {
+    "text": "TEAM SIZE IS NOT RESTRICTED"
+  },
+  {
+    "text": "USE THE MAIN THEME"
+  },
+  {
+    "text": "CATEGORIES:"
+  },
+  {
+    "text": "DESKTOP"
+  },
+  {
+    "text": "MOBILE"
+  },
+  {
+    "text": "SERVER"
+  },
+  {
+    "text": "WEBXR"
+  },
+  {
+    "text": "WEB MONETIZATION"
+  },
+  {
+    "text": "DECENTRALIZED"
+  },
+  {
+    "text": "SOME GAME EXAMPLES!"
+  },
+  {
+    "text": [
+      "INTERPLANETERY TRANSPORT SYSTEM",
+      "",
+      "JS13K 2021 THEME SPACE",
+      "AUTHOR RIK HARINK"
+    ]
+  },
+  {
+    "text": [
+      "SPACE HUGGERS",
+      "",
+      "JS13K 2021 THEME SPACE",
+      "AUTHOR FRANK FORCE"
+    ]
+  },
+  {
+    "text": ["Q1K3", "", "JS13K 2021 THEME SPACE", "AUTHOR PHOBOSLAB"]
   },
   {
     "text": "LET'S START: PROJECT SETUP"
