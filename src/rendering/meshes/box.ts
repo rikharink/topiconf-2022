@@ -22,7 +22,7 @@ export class Box extends Mesh {
     const p6: Vector3 = [width * 0.5, height * 0.5, -depth * 0.5];
     const p7: Vector3 = [-width * 0.5, height * 0.5, -depth * 0.5];
 
-    this.vertices = [
+    this.setVertices([
       //FRONT
       p0,
       p1,
@@ -53,9 +53,9 @@ export class Box extends Mesh {
       p5,
       p7,
       p6,
-    ];
+    ]);
 
-    this.triangles = [
+    this.setTriangles([
       //FRONT
       0, 1, 2, 1, 3, 2,
       //LEFT
@@ -68,13 +68,13 @@ export class Box extends Mesh {
       16, 17, 18, 17, 19, 18,
       //TOP
       20, 21, 22, 21, 23, 22,
-    ];
+    ]);
 
     const uv00: Vector2 = [0, 0];
     const uv10: Vector2 = [1, 0];
     const uv01: Vector2 = [0, 1];
     const uv11: Vector2 = [1, 1];
-    this.uvs = [
+    this.setUvs([
       // Front
       uv01,
       uv11,
@@ -105,12 +105,12 @@ export class Box extends Mesh {
       uv11,
       uv00,
       uv10,
-    ];
+    ]);
     this.recalculateNormals();
   }
 
   public setUnwrappedUvs() {
-    this.uvs = [
+    this.setUvs([
       //FRONT
       [0, 2 / 3],
       [0.25, 2 / 3],
@@ -141,6 +141,6 @@ export class Box extends Mesh {
       [0.5, 1 / 3],
       [0.25, 0],
       [0.5, 0],
-    ];
+    ]);
   }
 }

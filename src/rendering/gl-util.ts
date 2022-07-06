@@ -85,6 +85,9 @@ export function setupAttributeBuffer(
 ): WebGLBuffer {
   const buffer = gl.createBuffer()!;
   const attributeLocation = shader[attribute];
+  if (attributeLocation === undefined) {
+    throw Error(`Couldn't find attribute ${attribute} in shader`);
+  }
   gl.bindBuffer(target, buffer);
   gl.bufferData(target, data, isDynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
   gl.vertexAttribPointer(

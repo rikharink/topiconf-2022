@@ -4,13 +4,7 @@
       { "text": "So you want to build a tiny game?" },
       { "text": "a fictitious js13k game jam journey", "scale": 80 }
     ],
-    "background": ["#F19A13", "#E74043", "#982A7C", "#00A0E3"],
-    "entities": [
-      {
-        "entityId": "q1",
-        "translation": [0, 0, 0]
-      }
-    ]
+    "background": ["#F19A13", "#E74043", "#982A7C", "#00A0E3"]
   },
   {
     "text": [
@@ -55,7 +49,12 @@
     "text": ["use the main theme", "you will be judged on this"]
   },
   {
-    "text": ["there are several categories", "your game can join one or more", "", "the categories are:"]
+    "text": [
+      "there are several categories",
+      "your game can join one or more",
+      "",
+      "the categories are:"
+    ]
   },
   {
     "text": "Desktop"

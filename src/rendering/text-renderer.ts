@@ -152,13 +152,13 @@ export class TextRenderer {
 
   private _setupVao(gl: WebGL2RenderingContext) {
     gl.bindVertexArray(this._vao);
-    gl.enableVertexAttribArray(this._shader.a_pos);
-    gl.enableVertexAttribArray(this._shader.a_uv);
+    gl.enableVertexAttribArray(this._shader.pos);
+    gl.enableVertexAttribArray(this._shader.uv);
     gl.bindBuffer(GL_ARRAY_BUFFER, this._vertexBuffer);
-    gl.vertexAttribPointer(this._shader.a_pos, 2, GL_DATA_FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(this._shader.pos, 2, GL_DATA_FLOAT, false, 0, 0);
 
     gl.bindBuffer(GL_ARRAY_BUFFER, this._textureBuffer);
-    gl.vertexAttribPointer(this._shader.a_uv, 2, GL_DATA_FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(this._shader.uv, 2, GL_DATA_FLOAT, false, 0, 0);
     gl.bindVertexArray(null);
   }
 

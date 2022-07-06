@@ -5,6 +5,6 @@ import frag from '../shaders/uv.frag.glsl';
 
 export class UVMaterial extends Material {
   public constructor(gl: WebGL2RenderingContext) {
-    super(initShaderProgram(gl, vert, frag)!);
+    super('uv', initShaderProgram(gl, vert, frag)!);
   }
 }

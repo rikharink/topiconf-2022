@@ -26,7 +26,7 @@ export class Entity {
   public isDirty = true;
   private _mesh: Mesh;
   private _material: Material;
-  private _vao!: WebGLVertexArrayObject;
+  private _vao: WebGLVertexArrayObject | null = null;
   private _isDynamic: boolean;
   private _trianglesBuffer!: WebGLBuffer;
   private _rts: RotationTranslationScaleSource =
@@ -44,7 +44,7 @@ export class Entity {
     id: string,
     mesh: Mesh,
     material: Material,
-    isDynamic = true,
+    isDynamic = false,
     translation?: Vector3,
     rotation?: [Radian, Radian, Radian],
     scale?: Vector3,
@@ -59,7 +59,7 @@ export class Entity {
         .reverse()
         .map((c) => hexToRgb(c)),
     );
-    //this.updateTRS(translation, rotation, scale);
+    this.updateTRS(translation, rotation, scale);
     this._setupVao(gl);
   }
 
@@ -80,7 +80,9 @@ export class Entity {
   }
 
   private _setupVao(gl: WebGL2RenderingContext): void {
-    this._vao = gl.createVertexArray()!;
+    if (!this._vao) {
+      this._vao = gl.createVertexArray()!;
+    }
     gl.bindVertexArray(this._vao);
     setupAttributeBuffer(
       gl,
@@ -88,7 +90,7 @@ export class Entity {
       'pos',
       GL_ARRAY_BUFFER,
       this._isDynamic,
-      new Float32Array(this._mesh.vertices.flat()),
+      this._mesh.vertices,
       3,
     );
 
@@ -100,38 +102,38 @@ export class Entity {
       this._isDynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW,
     );
 
-    if (this._mesh.uvs.length > 0) {
+    if (this._mesh.uvs.length > 0 && this._material.shader.has('uv')) {
       this._uvBuffer = setupAttributeBuffer(
         gl,
         this._material.shader,
         'uv',
         GL_ARRAY_BUFFER,
         this._isDynamic,
-        new Float32Array(this._mesh.uvs.flat()),
+        this._mesh.uvs,
         2,
       );
     }
 
-    if (this._mesh.normals.length > 0) {
+    if (this._mesh.normals.length > 0 && this._material.shader.has('normal')) {
       this._normalBuffer = setupAttributeBuffer(
         gl,
         this._material.shader,
         'normal',
         GL_ARRAY_BUFFER,
         this._isDynamic,
-        new Float32Array(this._mesh.normals.flat()),
+        this._mesh.normals,
         3,
       );
     }
 
-    if (this._mesh.colors.length > 0) {
+    if (this._mesh.colors.length > 0 && this._material.shader.has('col')) {
       this._colorBuffer = setupAttributeBuffer(
         gl,
         this._material.shader,
         'col',
         GL_ARRAY_BUFFER,
         this._isDynamic,
-        new Float32Array(this._mesh.colors.flat()),
+        this._mesh.colors,
         4,
       );
     }
@@ -140,7 +142,6 @@ export class Entity {
 
   public render(gl: WebGL2RenderingContext, camera: Camera) {
     this._material.shader.enable(gl);
-
     gl.bindVertexArray(this._vao);
     const mv = create();
     multiply(mv, this.w, camera.v);
@@ -180,7 +181,7 @@ export class Entity {
 
   public updateWorldMatrix() {
     this._l = create();
-    // this._rts.getMatrix(this._l);
+    this._rts.getMatrix(this._l);
     if (this._parent) {
       multiply(this.w, this._l, this._parent.w);
     } else {

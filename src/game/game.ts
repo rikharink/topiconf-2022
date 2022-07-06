@@ -24,7 +24,13 @@ export class Game {
     this.renderer = renderer;
     this._input = new InputManager(this.renderer.gl.canvas);
     this.currentScene = start;
-    this._camera = new Camera3D([0, 0, 6], [0, 0, 0]);
+    this._camera = new PerspectiveCamera(
+      90 * DEGREE_TO_RADIAN,
+      settings.rendererSettings.resolution[0] /
+        settings.rendererSettings.resolution[1],
+      0.1,
+      100,
+    );
   }
 
   private _loop(now: Milliseconds) {

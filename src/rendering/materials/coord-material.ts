@@ -1,10 +1,10 @@
 import { initShaderProgram } from '../gl-util';
 import { Material } from './material';
 import vert from '../shaders/default.vert.glsl';
-import frag from '../shaders/default.frag.glsl';
+import frag from '../shaders/coord.frag.glsl';
 
-export class DefaultMaterial extends Material {
+export class CoordMaterial extends Material {
   public constructor(gl: WebGL2RenderingContext) {
-    super('default', initShaderProgram(gl, vert, frag)!);
+    super('coord', initShaderProgram(gl, vert, frag)!);
   }
 }

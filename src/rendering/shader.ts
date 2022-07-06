@@ -14,4 +14,8 @@ export class Shader {
       gl.useProgram(this.program);
     }
   }
+
+  public has(attribute: string): boolean {
+    return this[attribute] !== undefined;
+  }
 }
