@@ -9,23 +9,11 @@ import { EntityDescription, Line, Slide } from './types';
 import { hexToRgb } from './math/color';
 import { Entity } from './rendering/entities/entity';
 import { EntityStore } from './rendering/entities/entity-store';
-import { Quad } from './rendering/meshes/quad';
-import { DefaultMaterial } from './rendering/materials/default-material';
-import { Triangle } from './rendering/meshes/triangle';
-import { Box } from './rendering/meshes/box';
-import { UVMaterial } from './rendering/materials/uv-material';
-import { CoordMaterial } from './rendering/materials/coord-material';
-import { TextMaterial } from './rendering/materials/text-material';
 
 const renderer = new WebGL2Renderer({});
 document.body.appendChild(renderer.gl.canvas);
 
 const entities = new EntityStore();
-entities.register(
-  new Entity(renderer.gl, 'q1', new Quad(), new DefaultMaterial(renderer.gl)),
-  new Entity(renderer.gl, 't1', new Triangle(), new UVMaterial(renderer.gl)),
-  new Entity(renderer.gl, 'b1', new Box(), new UVMaterial(renderer.gl)),
-);
 
 state.game = new Game(getSlides(), renderer);
 state.game.start();
