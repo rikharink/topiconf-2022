@@ -1,12 +1,20 @@
 import { Entity } from '../rendering/entities/entity';
 import { generateRampTexture } from '../rendering/textures/generate-textures';
-import { RgbColor } from '../types';
+import { Line, NormalizedRgbaColor, RgbColor } from '../types';
+
+export const enum TextAlignment {
+  Left = 'Left',
+  Center = 'Center',
+}
 
 export class Scene {
   public id = 0;
   public previous?: Scene;
   public next?: Scene;
-  public text: string;
+  public text: Line[];
+  public textAlignment: TextAlignment;
+  public textColor?: NormalizedRgbaColor;
+  public haloColor?: NormalizedRgbaColor;
   public root?: Entity[];
   private _bg_colors?: RgbColor[];
   private _bg_texture?: WebGLTexture;
@@ -29,24 +37,42 @@ export class Scene {
 
   public constructor(
     gl: WebGL2RenderingContext,
-    text: string,
+    text: Line[],
+    textAlignment = TextAlignment.Center,
+    textColor?: NormalizedRgbaColor,
+    haloColor?: NormalizedRgbaColor,
     background?: RgbColor[],
     entities?: Entity[],
     previous?: Scene,
   ) {
     this._gl = gl;
     this.text = text;
+    this.textAlignment = textAlignment;
+    this.textColor = textColor;
+    this.haloColor = haloColor;
     this.root = entities;
     this.bg_colors = background;
     this.previous = previous;
   }
 
   public addNext(
-    text: string,
+    text: Line[],
+    textAlignment = TextAlignment.Center,
+    textColor?: NormalizedRgbaColor,
+    haloColor?: NormalizedRgbaColor,
     background?: RgbColor[],
     entities?: Entity[],
   ): Scene {
-    const child = new Scene(this._gl, text, background, entities, this);
+    const child = new Scene(
+      this._gl,
+      text,
+      textAlignment,
+      textColor,
+      haloColor,
+      background,
+      entities,
+      this,
+    );
     child.id = this.id + 1;
     this.next = child;
     return child;

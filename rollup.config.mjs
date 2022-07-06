@@ -20,17 +20,15 @@ let externalDependencies = [];
 if (isDev) {
   externalDependencies.push({
     tag: 'script',
-    src: 'https://cdn.jsdelivr.net/npm/lil-gui@0.16',
-    crossorigin: 'anonymous',
+    src: './lil-gui.min.js',
   });
   externalDependencies.push({
     tag: 'script',
-    src: 'https://mrdoob.github.io/stats.js/build/stats.min.js',
-    crossorigin: 'anonymous',
+    src: './stats.min.js',
   });
   externalDependencies.push({
     tag: 'script',
-    src: 'https://spectorcdn.babylonjs.com/spector.bundle.js',
+    src: './spector.bundle.js',
   });
 }
 
@@ -46,7 +44,10 @@ const plugins = [
   glslOptimize(),
   image(),
   copy({
-    targets: [{ src: 'src/style.css', dest: 'dist' }],
+    targets: [
+      { src: 'src/style.css', dest: 'dist' },
+      { src: 'vendor/*', dest: 'dist' },
+    ],
   }),
   json(),
   replace({
@@ -73,7 +74,7 @@ if (shouldMinify) {
         unsafe_math: true,
         unsafe_methods: true,
         hoist_funs: true,
-        booleans_as_integers: true,
+        booleans_as_integers: !isDev,
         drop_console: !isDev,
         drop_debugger: !isDev,
       },

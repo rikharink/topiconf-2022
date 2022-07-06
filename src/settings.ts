@@ -1,3 +1,4 @@
+import { DebugSettings } from './debug/gui';
 import {
   GL_COLOR_BUFFER_BIT,
   GL_DEPTH_BUFFER_BIT,
@@ -11,8 +12,8 @@ export const defaultTextRendererOptions: TextRendererSettings = {
   angle: 0,
   gamma: 2,
   textColor: [1, 1, 1, 1],
-  haloColor: [0, 0, 0, 1],
-  fontFamily: 'monospace',
+  haloColor: [152 / 255, 42 / 255, 124 / 255, 1],
+  fontFamily: '"JetBrainsMono Nerd Font", monospace',
   lineHeight: 1.2,
   letterSpacing: 0,
 };
@@ -27,9 +28,15 @@ export const defaultRendererSettings: RendererSettings = {
   textRendererSettings: defaultTextRendererOptions,
 };
 
+export const defaultDebugSettings: DebugSettings = {
+  showSpector: false,
+  showStats: false,
+};
+
 const settings = {
   dt: 10,
   rendererSettings: defaultRendererSettings,
+  debugSettings: defaultDebugSettings,
 };
 
 export default settings;

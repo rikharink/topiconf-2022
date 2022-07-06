@@ -1,3 +1,4 @@
+import { TextAlignment } from './game/scene';
 import { Vector2 } from './math/vector2';
 import { Vector3 } from './math/vector3';
 
@@ -25,8 +26,16 @@ export type EntityDescription = {
   scale?: Vector3;
 };
 
-export type Slide = {
+export type Line = {
   text: string;
+  scale?: number;
+};
+
+export type Slide = {
+  text: string | string[] | Line[];
+  textAlignment?: TextAlignment;
+  textColor?: NormalizedRgbaColor;
+  haloColor?: NormalizedRgbaColor;
   background?: string[];
   entities?: EntityDescription[];
 };

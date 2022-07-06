@@ -5,7 +5,7 @@ import { Scene } from './game/scene';
 import { WebGL2Renderer } from './rendering/gl-renderer';
 import state from './state';
 import slides from './slides.json';
-import { EntityDescription, Slide } from './types';
+import { EntityDescription, Line, Slide } from './types';
 import { hexToRgb } from './math/color';
 import { Entity } from './rendering/entities/entity';
 import { EntityStore } from './rendering/entities/entity-store';
@@ -34,8 +34,20 @@ if (process.env.NODE_ENV === 'development') {
   showDebugGUI();
 }
 
-function getText(text: string | string[]) {
-  return Array.isArray(text) ? text.join('\n') : text;
+function getText(text: string | string[] | Line[]): Line[] {
+  if (Array.isArray(text)) {
+    if (text.length === 0) return [];
+    if (typeof text[0] === 'object') {
+      return text as Line[];
+    } else {
+      return (text as string[]).map((t) => {
+        return {
+          text: t,
+        };
+      });
+    }
+  }
+  return [{ text: text }];
 }
 
 function getEntity(e: EntityDescription): Entity {
@@ -54,6 +66,9 @@ function getSlides(): Scene {
   const r = new Scene(
     renderer.gl,
     getText(first.text),
+    first.textAlignment,
+    first.textColor,
+    first.haloColor,
     bg?.map(hexToRgb),
     first.entities?.map(getEntity),
   );
@@ -61,6 +76,9 @@ function getSlides(): Scene {
   for (const s of ls.slice(1)) {
     p = p.addNext(
       getText(s.text),
+      s.textAlignment,
+      s.textColor,
+      s.haloColor,
       s.background?.map(hexToRgb),
       s.entities?.map(getEntity),
     );

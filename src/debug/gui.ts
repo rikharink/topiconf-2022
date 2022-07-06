@@ -2,15 +2,16 @@ import { TAU } from '../math/util';
 import settings from '../settings';
 import state from '../state';
 
-const debugMenus = {
-  showSpector: true,
-  showStats: false,
-};
+export interface DebugSettings {
+  showSpector: boolean;
+  showStats: boolean;
+}
 
 async function showDebugGUI() {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   //@ts-ignore
-  const controls = new lil.GUI();
+  const controls = new lil.GUI({ width: 375 });
+  controls.close();
   if (!controls.addFolder) {
     return;
   }
@@ -109,27 +110,27 @@ async function showDebugGUI() {
 
   //Spector.JS
   const spector = debugControls.add(
-    debugMenus,
+    settings.debugSettings,
     'showSpector',
-    debugMenus.showSpector,
+    settings.debugSettings.showSpector,
   );
   spector.onChange(function (v: boolean) {
     showSpectorGUI(v);
   });
   createSpectorGUI();
-  setTimeout(() => showSpectorGUI(debugMenus.showSpector), 100);
+  setTimeout(() => showSpectorGUI(settings.debugSettings.showSpector), 100);
 
   //Stats.js
   const stats = debugControls.add(
-    debugMenus,
+    settings.debugSettings,
     'showStats',
-    debugMenus.showStats,
+    settings.debugSettings.showStats,
   );
   stats.onChange(function (v: boolean) {
     showStatsGUI(v);
   });
   createStatsGUI();
-  showStatsGUI(debugMenus.showStats);
+  showStatsGUI(settings.debugSettings.showStats);
 }
 
 if (process.env.NODE_ENV === 'development') {

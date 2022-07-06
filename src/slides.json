@@ -1,6 +1,9 @@
 [
   {
-    "text": "JS13K: SO YOU WANT TO BUILD A TINY GAME?",
+    "text": [
+      { "text": "So you want to build a tiny game?" },
+      { "text": "a fictitious js13k game jam journey", "scale": 80 }
+    ],
     "background": ["#F19A13", "#E74043", "#982A7C", "#00A0E3"],
     "entities": [
       {
@@ -10,74 +13,89 @@
     ]
   },
   {
-    "text": "WHAT IS JS13K?"
-  },
-  {
-    "text": "THE MAIN RULES OF THE GAMEJAM"
+    "text": [
+      "13 JULY 2022 13:00 CEST",
+      "you hear about a game jam called js13k",
+      "it starts in exactly one month"
+    ],
+    "background": ["#F19A13", "#E74043", "#982A7C", "#00A0E3"]
   },
   {
     "text": [
-      "PACKAGE SIZE BELOW 13 KIBIBYTES",
-      "(13 * 1024 BYTES)",
-      "NO EXTERNAL RESOURCES ALLOWED"
-    ]
-  },
-  {
-    "text": ["HAS TO RUN IN LATEST", "FIREFOX AND CHROME"]
-  },
-  {
-    "text": "NEW CONTENT ONLY"
-  },
-  {
-    "text": "TEAM SIZE IS NOT RESTRICTED"
-  },
-  {
-    "text": "USE THE MAIN THEME"
-  },
-  {
-    "text": "CATEGORIES:"
-  },
-  {
-    "text": "DESKTOP"
-  },
-  {
-    "text": "MOBILE"
-  },
-  {
-    "text": "SERVER"
-  },
-  {
-    "text": "WEBXR"
-  },
-  {
-    "text": "WEB MONETIZATION"
-  },
-  {
-    "text": "DECENTRALIZED"
-  },
-  {
-    "text": "SOME GAME EXAMPLES!"
-  },
-  {
-    "text": [
-      "INTERPLANETERY TRANSPORT SYSTEM",
-      "",
-      "JS13K 2021 THEME SPACE",
-      "AUTHOR RIK HARINK"
+      "OKAY BUT WHAT IS JS13K?",
+      "you start reading https://js13kgames.com"
     ]
   },
   {
     "text": [
-      "SPACE HUGGERS",
-      "",
-      "JS13K 2021 THEME SPACE",
-      "AUTHOR FRANK FORCE"
+      "IT'S A GAME JAM FOR HTML5 GAME DEVELOPERS!!!",
+      "With as size restriction twist‽‽‽"
     ]
   },
   {
-    "text": ["Q1K3", "", "JS13K 2021 THEME SPACE", "AUTHOR PHOBOSLAB"]
+    "text": ["TELL ME MORE!", "What are the rules?"]
   },
   {
-    "text": "LET'S START: PROJECT SETUP"
+    "text": [
+      "package size < 13 KiB",
+      "(13 * 1024 bytes)",
+      "no external resources allowed"
+    ]
+  },
+  {
+    "text": ["has to run in", "the latest Firefox and Chrome"]
+  },
+  {
+    "text": "new content only"
+  },
+  {
+    "text": ["team size is not restricted", "(but the prize pool is)"]
+  },
+  {
+    "text": ["use the main theme", "you will be judged on this"]
+  },
+  {
+    "text": ["there are several categories", "your game can join one or more", "", "the categories are:"]
+  },
+  {
+    "text": "Desktop"
+  },
+  {
+    "text": "Mobile"
+  },
+  {
+    "text": "Server"
+  },
+  {
+    "text": ["WebXR"]
+  },
+  {
+    "text": "Web Monetization"
+  },
+  {
+    "text": "Decentralized"
+  },
+  {
+    "text": ["13 JULY 2022 13:13 CEST", "LET'S JOIN THE COMPETITION!1!!"],
+    "background": ["#F19A13", "#E74043", "#982A7C", "#00A0E3"]
+  },
+  {
+    "text": [
+      "$ mkdir js13k-2022",
+      "$ cd js13k-2022",
+      "$ git init",
+      "$ npm init",
+      "$ git commit -am \"it starts...\""
+    ],
+    "textAlignment": "Left",
+    "textColor": [0, 1, 0, 1],
+    "haloColor": [0, 0, 0, 1]
+  },
+  {
+    "text": ["Hmmmm... now what?"]
+  },
+  {
+    "text": ["13 JULY 2022 13:15 CEST", "Some more research..."],
+    "background": ["#F19A13", "#E74043", "#982A7C", "#00A0E3"]
   }
 ]

@@ -61,12 +61,12 @@ import {
   GL_TRIANGLES,
 } from './gl-constants';
 import settings from '../settings';
-import { NormalizedRgbaColor, Radian } from '../types';
-import { Scene } from '../game/scene';
+import { Line, NormalizedRgbaColor, Radian } from '../types';
+import { Scene, TextAlignment } from '../game/scene';
 
 const INF = 1e20;
 const SUPPORTED_CHARS =
-  'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-=_+[]{}\\|;:\'",.<>/?`~ ';
+  'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-=_+[]{}\\|;:\'",.<>/?`~‽ ';
 
 interface Glyph {
   data: Uint8ClampedArray;
@@ -191,7 +191,12 @@ export class TextRenderer {
     gl.activeTexture(GL_TEXTURE0);
   }
 
-  private _drawText(gl: WebGL2RenderingContext, text: string, size: number) {
+  private _drawText(
+    gl: WebGL2RenderingContext,
+    lines: Line[],
+    textAlignment: TextAlignment,
+    size: number,
+  ) {
     const vertexElements = [];
     const textureElements = [];
 
@@ -206,10 +211,19 @@ export class TextRenderer {
       settings.rendererSettings.textRendererSettings.lineHeight;
     const letterSpacing =
       settings.rendererSettings.textRendererSettings.letterSpacing;
-
-    const lines = text.split('\n');
-
-    const textHeight = lines.length * fontsize * scale * lineHeight;
+    const lineWidths = lines.map((line) =>
+      line.text
+        .split('')
+        .reduce(
+          (acc, c) =>
+            acc + this._tinySdf.sdfs[c].glyphAdvance * scale + letterSpacing,
+          0,
+        ),
+    );
+    const maxWidth = Math.max.apply(null, lineWidths);
+    const textHeight = lines
+      .map(() => scale * fontsize * lineHeight)
+      .reduce((a, b) => a + b);
     const canvasHeight = gl.canvas.height;
     const canvasWidth = gl.canvas.width;
     const baseX = canvasWidth * 0.5;
@@ -217,46 +231,48 @@ export class TextRenderer {
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
-      const lineWidth = line
-        .split('')
-        .reduce(
-          (acc, c) =>
-            acc + this._tinySdf.sdfs[c].glyphAdvance * scale + letterSpacing,
-          0,
-        );
-
+      const lineScale = scale;
+      const lineWidth = lineWidths[i];
+      const baseWidth =
+        textAlignment === TextAlignment.Center ? lineWidth : maxWidth;
       const pen = {
-        x: baseX - lineWidth * 0.5,
-        y: baseY + i * fontsize * scale * lineHeight,
+        x: baseX - baseWidth * 0.5,
+        y: baseY + i * fontsize * lineScale * lineHeight,
       };
-      for (let i = 0; i < line.length; i++) {
-        const char = line.charAt(i);
+      const baseChar = this._tinySdf.sdfs['M'];
+      for (let i = 0; i < line.text.length; i++) {
+        const char = line.text.charAt(i);
         if (char === '\n') {
           break;
         }
         const current = this._tinySdf.sdfs[char];
         if (char === ' ') {
-          pen.x = pen.x + current.glyphAdvance * scale;
+          pen.x = pen.x + current.glyphAdvance * lineScale;
           continue;
         }
+        const charInfo = this._tinySdf.sdfs[char];
+        const correction =
+          charInfo.glyphTop !== baseChar.glyphTop
+            ? baseChar.glyphTop - charInfo.glyphTop
+            : 0;
 
-        const posX = this._tinySdf.sdfs[char].x;
-        const posY = this._tinySdf.sdfs[char].y;
+        const posX = charInfo.x;
+        const posY = charInfo.y - correction;
 
         vertexElements.push(
-          pen.x + (bx - buf) * scale,
-          pen.y - by * scale,
-          pen.x + (bx - buf + width) * scale,
-          pen.y - by * scale,
-          pen.x + (bx - buf) * scale,
-          pen.y + (height - by) * scale,
+          pen.x + (bx - buf) * lineScale,
+          pen.y - by * lineScale,
+          pen.x + (bx - buf + width) * lineScale,
+          pen.y - by * lineScale,
+          pen.x + (bx - buf) * lineScale,
+          pen.y + (height - by) * lineScale,
 
-          pen.x + (bx - buf + width) * scale,
-          pen.y - by * scale,
-          pen.x + (bx - buf) * scale,
-          pen.y + (height - by) * scale,
-          pen.x + (bx - buf + width) * scale,
-          pen.y + (height - by) * scale,
+          pen.x + (bx - buf + width) * lineScale,
+          pen.y - by * lineScale,
+          pen.x + (bx - buf) * lineScale,
+          pen.y + (height - by) * lineScale,
+          pen.x + (bx - buf + width) * lineScale,
+          pen.y + (height - by) * lineScale,
         );
 
         textureElements.push(
@@ -273,7 +289,7 @@ export class TextRenderer {
           posX + width,
           posY + height,
         );
-        pen.x = pen.x + current.glyphAdvance * scale + letterSpacing;
+        pen.x = pen.x + current.glyphAdvance * lineScale + letterSpacing;
       }
     }
 
@@ -324,7 +340,7 @@ export class TextRenderer {
     );
 
     if (this.isDirty) {
-      this._drawText(gl, scene.text, scale);
+      this._drawText(gl, scene.text, scene.textAlignment, scale);
       this.isDirty = false;
     }
 
@@ -346,10 +362,10 @@ export class TextRenderer {
 
     gl.uniform1i(this._shader.u_texture, 1);
 
-    gl.uniform4fv(
-      this._shader.u_color,
-      settings.rendererSettings.textRendererSettings.haloColor,
-    );
+    const haloColor =
+      scene.haloColor ??
+      settings.rendererSettings.textRendererSettings.haloColor;
+    gl.uniform4fv(this._shader.u_color, haloColor);
     gl.uniform1f(this._shader.u_buffer, buffer);
     gl.uniform1f(
       this._shader.u_gamma,
@@ -359,10 +375,10 @@ export class TextRenderer {
     gl.disable(GL_CULL_FACE);
     gl.drawArrays(GL_TRIANGLES, 0, this._vertexBuffer.numItems!);
 
-    gl.uniform4fv(
-      this._shader.u_color,
-      settings.rendererSettings.textRendererSettings.textColor,
-    );
+    const textColor =
+      scene.textColor ??
+      settings.rendererSettings.textRendererSettings.textColor;
+    gl.uniform4fv(this._shader.u_color, textColor);
     gl.uniform1f(this._shader.u_buffer, 0.75);
     gl.drawArrays(GL_TRIANGLES, 0, this._vertexBuffer.numItems!);
     gl.enable(GL_DEPTH_TEST);
@@ -394,7 +410,7 @@ class TinySDF {
 
   constructor({
     fontSize = 24,
-    buffer = 3,
+    buffer = 24,
     radius = 8,
     cutoff = 0.25,
     fontFamily = 'monospace',

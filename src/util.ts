@@ -6,7 +6,7 @@ export function swap<T>(arr: T[], i: number, j: number): void {
 
 export function uuidv4(rand: Random): UUIDV4 {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-    let r = (rand() * 16) | 0,
+    const r = (rand() * 16) | 0,
       v = c == 'x' ? r : (r & 0x3) | 0x8;
     return v.toString(16);
   });
