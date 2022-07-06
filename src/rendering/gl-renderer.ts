@@ -65,6 +65,7 @@ export class WebGL2Renderer {
     const gl = canvas.getContext('webgl2', {
       antialias: settings.rendererSettings.antialias,
     })!;
+    if (!gl) throw Error("Browser doesn't support webgl2");
     const [width, height] = settings.rendererSettings.resolution;
     this.setAntialias(gl);
     this.setResolution(gl, width, height);
@@ -94,6 +95,7 @@ export class WebGL2Renderer {
   }
 
   public setAntialias(gl: WebGL2RenderingContext): void {
+    console.log(gl, gl.canvas);
     if (settings.rendererSettings.antialias) {
       gl.canvas.classList.remove('no-aa');
       gl.canvas.classList.add('aa');
@@ -106,9 +108,6 @@ export class WebGL2Renderer {
   _prevColor?: RgbaColor;
   public render(scene: Scene, camera: Camera) {
     const gl = this.gl;
-    if (settings.rendererSettings.resizeToScreen) {
-      this._resizeToScreen(gl);
-    }
     this._shader.enable(gl);
     const color = settings.rendererSettings.clearColor;
     if (!this._prevColor || !arrayEquals(color, this._prevColor)) {
@@ -150,19 +149,5 @@ export class WebGL2Renderer {
 
   private _renderText(gl: WebGL2RenderingContext, scene: Scene) {
     this.text_renderer.render(gl, scene);
-  }
-
-  private _resizeToScreen(gl: WebGL2RenderingContext): boolean {
-    const dpr = settings.rendererSettings.supportHiDpi
-      ? window.devicePixelRatio || 1
-      : 1;
-    const dw = gl.canvas.clientWidth * dpr;
-    const dh = gl.canvas.clientHeight * dpr;
-
-    if (gl.canvas.width !== dw || gl.canvas.height != dh) {
-      this.setResolution(gl, dw, dh);
-      return true;
-    }
-    return false;
   }
 }

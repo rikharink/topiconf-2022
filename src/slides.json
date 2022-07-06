@@ -23,7 +23,7 @@
   {
     "text": [
       "IT'S A GAME JAM FOR HTML5 GAME DEVELOPERS!!!",
-      "With as size restriction twist‽‽‽"
+      "With a size restriction twist‽‽‽"
     ]
   },
   {
@@ -31,7 +31,7 @@
   },
   {
     "text": [
-      "package size < 13 KiB",
+      "package size <= 13 KiB",
       "(13 * 1024 bytes)",
       "no external resources allowed"
     ]
@@ -51,9 +51,7 @@
   {
     "text": [
       "there are several categories",
-      "your game can join one or more",
-      "",
-      "the categories are:"
+      "your game can join one or more"
     ]
   },
   {
@@ -75,7 +73,7 @@
     "text": "Decentralized"
   },
   {
-    "text": ["13 JULY 2022 13:13 CEST", "LET'S JOIN THE COMPETITION!1!!"],
+    "text": ["13 JULY 2022 13:13 CEST", "LET'S JOIN THE COMPETITION!1!11!!"],
     "background": ["#F19A13", "#E74043", "#982A7C", "#00A0E3"]
   },
   {
@@ -84,6 +82,7 @@
       "$ cd js13k-2022",
       "$ git init",
       "$ npm init",
+      "$ gi Node > .gitignore",
       "$ git commit -am \"it starts...\""
     ],
     "textAlignment": "Left",

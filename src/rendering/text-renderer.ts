@@ -138,14 +138,6 @@ export class TextRenderer {
     this._pMatrix = create();
     ortho(this._pMatrix, 0, gl.canvas.width, gl.canvas.height, 0, 0, -1);
     this._texture = gl.createTexture()!;
-
-    if (window.devicePixelRatio > 1) {
-      gl.canvas.style.width = `${gl.canvas.width}px`;
-      gl.canvas.style.height = `${gl.canvas.height}px`;
-      gl.canvas.width *= 2;
-      gl.canvas.height *= 2;
-    }
-
     this._vao = gl.createVertexArray()!;
     this._setupVao(gl);
   }

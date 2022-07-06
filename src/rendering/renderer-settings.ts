@@ -6,7 +6,6 @@ export interface RendererSettings {
   clearMask: number;
   resolution: Resolution;
   supportHiDpi: boolean;
-  resizeToScreen: boolean;
   antialias: boolean;
   textRendererSettings: TextRendererSettings;
 }
