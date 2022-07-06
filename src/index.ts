@@ -3,12 +3,10 @@ import { showDebugGUI } from './debug/gui';
 import { Game } from './game/game';
 import { Scene } from './game/scene';
 import { WebGL2Renderer } from './rendering/gl-renderer';
-import { injectHead } from './inject';
 import state from './state';
 import slides from './slides.json';
-import { EntityDescription, RgbColor, Slide } from './types';
+import { EntityDescription, Slide } from './types';
 import { hexToRgb } from './math/color';
-import settings from './settings';
 import { Entity } from './rendering/entities/entity';
 import { EntityStore } from './rendering/entities/entity-store';
 import { Quad } from './rendering/meshes/quad';
@@ -17,7 +15,6 @@ import { Triangle } from './rendering/meshes/triangle';
 import { Box } from './rendering/meshes/box';
 import { UVMaterial } from './rendering/materials/uv-material';
 
-injectHead();
 const renderer = new WebGL2Renderer({});
 document.body.appendChild(renderer.gl.canvas);
 
@@ -53,13 +50,6 @@ function getEntity(e: EntityDescription): Entity {
 function getSlides(): Scene {
   const ls = slides as Slide[];
   const bg = ls[0].background;
-  const clearColor = settings.rendererSettings.clearColor;
-  const defaultColor: RgbColor = [
-    clearColor[0] * 255,
-    clearColor[1] * 255,
-    clearColor[2] * 255,
-  ];
-
   const first: Slide = slides[0] as Slide;
   const r = new Scene(
     renderer.gl,

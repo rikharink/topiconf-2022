@@ -6,35 +6,14 @@ import json from '@rollup/plugin-json';
 import image from '@rollup/plugin-image';
 import replace from '@rollup/plugin-replace';
 import html2 from 'rollup-plugin-html2';
-import { Packer } from 'roadroller';
 import livereload from 'rollup-plugin-livereload';
 import serve from 'rollup-plugin-serve';
 import { default as glslOptimize } from 'rollup-plugin-glsl-optimize';
+import copy from 'rollup-plugin-copy';
 
 const env = process.env.NODE_ENV || 'development';
 const isDev = env === 'development';
 const shouldMinify = process.env.MINIFY === 'true';
-const shouldRoadroller = process.env.ROADROLLER === 'true';
-const roadroller = {
-  renderChunk(data) {
-    const inputs = [
-      {
-        data,
-        type: 'js',
-        action: 'eval',
-      },
-    ];
-
-    const options = {
-      maxMemoryMB: 150,
-    };
-    console.log('Rolling the road...');
-    const packer = new Packer(inputs, options);
-    packer.optimize(2);
-    const { firstLine, secondLine } = packer.makeDecoder();
-    return firstLine + secondLine;
-  },
-};
 
 let externalDependencies = [];
 
@@ -66,6 +45,9 @@ const plugins = [
   }),
   glslOptimize(),
   image(),
+  copy({
+    targets: [{ src: 'src/style.css', dest: 'dist' }],
+  }),
   json(),
   replace({
     preventAssignment: true,
@@ -106,10 +88,6 @@ if (shouldMinify) {
   );
 }
 
-if (shouldRoadroller) {
-  plugins.push(roadroller);
-}
-
 if (isDev) {
   plugins.push(livereload({ watch: 'dist' }));
   plugins.push(serve({ open: true, contentBase: 'dist' }));
@@ -121,7 +99,7 @@ export default defineConfig({
   output: {
     file: join('dist', 'bundle.js'),
     format: 'iife',
-    sourcemap: isDev && !shouldRoadroller,
+    sourcemap: isDev,
     strict: false,
   },
   plugins,

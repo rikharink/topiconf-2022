@@ -26,7 +26,6 @@ import {
 import { Camera } from './camera/camera';
 import { RgbaColor } from '../types';
 import { arrayEquals } from '../util';
-import { generateSolidTexture } from './textures/generate-textures';
 
 export class WebGL2Renderer {
   public gl: WebGL2RenderingContext;
