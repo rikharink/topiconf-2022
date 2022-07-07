@@ -11,6 +11,7 @@ import {
   GL_ELEMENT_ARRAY_BUFFER,
   GL_STATIC_DRAW,
   GL_TEXTURE0,
+  GL_TEXTURE2,
   GL_TEXTURE_2D,
   GL_TRIANGLES,
 } from '../gl-constants';
@@ -25,7 +26,7 @@ export class Entity {
   public w: Matrix4x4 = create();
   public isDirty = true;
   private _mesh: Mesh;
-  private _material: Material;
+  protected material: Material;
   private _vao: WebGLVertexArrayObject | null = null;
   private _isDynamic: boolean;
   private _trianglesBuffer!: WebGLBuffer;
@@ -51,7 +52,7 @@ export class Entity {
   ) {
     this.id = id;
     this._mesh = mesh;
-    this._material = material;
+    this.material = material;
     this._isDynamic = isDynamic;
     this._texture = generateRampTexture(
       gl,
@@ -86,7 +87,7 @@ export class Entity {
     gl.bindVertexArray(this._vao);
     setupAttributeBuffer(
       gl,
-      this._material.shader,
+      this.material.shader,
       'pos',
       GL_ARRAY_BUFFER,
       this._isDynamic,
@@ -102,10 +103,10 @@ export class Entity {
       this._isDynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW,
     );
 
-    if (this._mesh.uvs.length > 0 && this._material.shader.has('uv')) {
+    if (this._mesh.uvs.length > 0 && this.material.shader.has('uv')) {
       this._uvBuffer = setupAttributeBuffer(
         gl,
-        this._material.shader,
+        this.material.shader,
         'uv',
         GL_ARRAY_BUFFER,
         this._isDynamic,
@@ -114,10 +115,10 @@ export class Entity {
       );
     }
 
-    if (this._mesh.normals.length > 0 && this._material.shader.has('normal')) {
+    if (this._mesh.normals.length > 0 && this.material.shader.has('normal')) {
       this._normalBuffer = setupAttributeBuffer(
         gl,
-        this._material.shader,
+        this.material.shader,
         'normal',
         GL_ARRAY_BUFFER,
         this._isDynamic,
@@ -126,10 +127,10 @@ export class Entity {
       );
     }
 
-    if (this._mesh.colors.length > 0 && this._material.shader.has('col')) {
+    if (this._mesh.colors.length > 0 && this.material.shader.has('col')) {
       this._colorBuffer = setupAttributeBuffer(
         gl,
-        this._material.shader,
+        this.material.shader,
         'col',
         GL_ARRAY_BUFFER,
         this._isDynamic,
@@ -140,26 +141,30 @@ export class Entity {
     gl.bindVertexArray(null);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
+  protected preDraw(gl: WebGL2RenderingContext, camera: Camera) {}
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
+  protected postDraw(gl: WebGL2RenderingContext) {}
+
   public render(gl: WebGL2RenderingContext, camera: Camera) {
-    this._material.shader.enable(gl);
+    this.material.shader.enable(gl);
     gl.bindVertexArray(this._vao);
     const mv = create();
     multiply(mv, this.w, camera.v);
-    gl.uniformMatrix4fv(this._material.shader.mv, false, mv);
-    gl.uniformMatrix4fv(this._material.shader.p, false, camera.p);
-    gl.uniform1f(this._material.shader.u_mix, 0);
-
+    gl.uniformMatrix4fv(this.material.shader.mv, false, mv);
+    gl.uniformMatrix4fv(this.material.shader.p, false, camera.p);
+    gl.uniform1f(this.material.shader.u_mix, 0);
     gl.activeTexture(GL_TEXTURE0);
     gl.bindTexture(GL_TEXTURE_2D, this._texture);
-    gl.activeTexture(GL_TEXTURE0);
-    gl.uniform1i(this._material.shader.sampler, 0);
-
+    gl.uniform1i(this.material.shader.sampler, 0);
+    this.preDraw(gl, camera);
     gl.drawElements(
       GL_TRIANGLES,
       this._mesh.triangles.length,
       GL_DATA_UNSIGNED_SHORT,
       0,
     );
+    this.postDraw(gl);
     gl.bindVertexArray(null);
   }
 

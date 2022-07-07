@@ -20,7 +20,7 @@ export type Point3D = Vector3;
 export type Resolution = [width: number, height: number];
 
 export type EntityDescription = {
-  entityId: string;
+  id: string;
   translation?: Vector3;
   rotation?: [Radian, Radian, Radian];
   scale?: Vector3;

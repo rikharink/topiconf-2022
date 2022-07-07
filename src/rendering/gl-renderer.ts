@@ -72,11 +72,6 @@ export class WebGL2Renderer {
     this._shader = initShaderProgram(gl, vert, frag)!;
     gl.blendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
     gl.enable(GL_BLEND);
-    gl.enable(GL_CULL_FACE);
-    gl.enable(GL_DEPTH_TEST);
-    gl.depthFunc(GL_LEQUAL);
-    gl.clearDepth(1.0);
-
     const color = settings.rendererSettings.clearColor;
     gl.clearColor(color[0], color[1], color[2], color[3]);
     this.gl = gl;
@@ -95,7 +90,6 @@ export class WebGL2Renderer {
   }
 
   public setAntialias(gl: WebGL2RenderingContext): void {
-    console.log(gl, gl.canvas);
     if (settings.rendererSettings.antialias) {
       gl.canvas.classList.remove('no-aa');
       gl.canvas.classList.add('aa');
@@ -126,12 +120,15 @@ export class WebGL2Renderer {
         gl.activeTexture(GL_TEXTURE2);
         gl.bindTexture(GL_TEXTURE_2D, scene.bg_texture);
         gl.activeTexture(GL_TEXTURE0);
-        gl.uniform1f(this._shader.u_mix, 0);
-        gl.uniform1i(this._shader.sampler, 2);
-      } else {
-        gl.uniform1f(this._shader.u_mix, 1);
       }
       this.isDirty = false;
+    }
+
+    if (scene.bg_texture) {
+      gl.uniform1f(this._shader.u_mix, 0);
+      gl.uniform1i(this._shader.sampler, 2);
+    } else {
+      gl.uniform1f(this._shader.u_mix, 1);
     }
     gl.drawArrays(GL_TRIANGLE_FAN, 0, 3);
   }

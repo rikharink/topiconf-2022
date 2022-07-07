@@ -9,11 +9,16 @@ import { EntityDescription, Line, Slide } from './types';
 import { hexToRgb } from './math/color';
 import { Entity } from './rendering/entities/entity';
 import { EntityStore } from './rendering/entities/entity-store';
+import { Rectangle } from './rendering/entities/rectangle';
 
 const renderer = new WebGL2Renderer({});
 document.body.appendChild(renderer.gl.canvas);
 
 const entities = new EntityStore();
+entities.register(
+  new Rectangle(renderer.gl, 'trl', [0, 0], [100, 35], 0),
+  new Rectangle(renderer.gl, 'trd', [0, 0], [100, 35], 0),
+);
 
 state.game = new Game(getSlides(), renderer);
 state.game.start();
@@ -39,9 +44,9 @@ function getText(text: string | string[] | Line[]): Line[] {
 }
 
 function getEntity(e: EntityDescription): Entity {
-  const entity = entities.get(e.entityId);
+  const entity = entities.get(e.id);
   if (!entity) {
-    throw Error(`entity with id ${e.entityId} was not found!`);
+    throw Error(`entity with id ${e.id} was not found!`);
   }
   entity.updateTRS(e.translation, e.rotation, e.scale);
   return entity;

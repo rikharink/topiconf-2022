@@ -373,8 +373,6 @@ export class TextRenderer {
     gl.uniform4fv(this._shader.u_color, textColor);
     gl.uniform1f(this._shader.u_buffer, 0.75);
     gl.drawArrays(GL_TRIANGLES, 0, this._vertexBuffer.numItems!);
-    gl.enable(GL_DEPTH_TEST);
-    gl.enable(GL_CULL_FACE);
     gl.bindVertexArray(null);
   }
 }

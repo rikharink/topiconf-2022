@@ -5,7 +5,6 @@ export interface RendererSettings {
   clearColor: NormalizedRgbaColor;
   clearMask: number;
   resolution: Resolution;
-  supportHiDpi: boolean;
   antialias: boolean;
   textRendererSettings: TextRendererSettings;
 }

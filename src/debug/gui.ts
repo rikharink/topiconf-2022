@@ -88,18 +88,8 @@ async function showDebugGUI() {
     100,
   );
   ls.onChange(markDirty);
-  const renderingControls = controls.addFolder('rendering');
-  renderingControls.add(
-    settings.rendererSettings,
-    'supportHiDpi',
-    settings.rendererSettings.supportHiDpi,
-  );
 
-  renderingControls.add(
-    settings.rendererSettings,
-    'resizeToScreen',
-    settings.rendererSettings.resizeToScreen,
-  );
+  const renderingControls = controls.addFolder('rendering');
   const clearColor = renderingControls.addColor(
     settings.rendererSettings,
     'clearColor',

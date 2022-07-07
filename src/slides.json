@@ -18,59 +18,131 @@
     "text": [
       "OKAY BUT WHAT IS JS13K?",
       "you start reading https://js13kgames.com"
+    ],
+    "entities": [
+      {
+        "id": "trl"
+      }
     ]
   },
   {
     "text": [
       "IT'S A GAME JAM FOR HTML5 GAME DEVELOPERS!!!",
       "With a size restriction twist‽‽‽"
+    ],
+    "entities": [
+      {
+        "id": "trl"
+      }
     ]
   },
   {
-    "text": ["TELL ME MORE!", "What are the rules?"]
+    "text": ["TELL ME MORE!", "What are the rules?"],
+    "entities": [
+      {
+        "id": "trl"
+      }
+    ]
   },
   {
     "text": [
       "package size <= 13 KiB",
       "(13 * 1024 bytes)",
       "no external resources allowed"
+    ],
+    "entities": [
+      {
+        "id": "trl"
+      }
     ]
   },
   {
-    "text": ["has to run in", "the latest Firefox and Chrome"]
-  },
-  {
-    "text": "new content only"
-  },
-  {
-    "text": ["team size is not restricted", "(but the prize pool is)"]
-  },
-  {
-    "text": ["use the main theme", "you will be judged on this"]
-  },
-  {
-    "text": [
-      "there are several categories",
-      "your game can join one or more"
+    "text": ["has to run in", "the latest Firefox and Chrome"],
+    "entities": [
+      {
+        "id": "trl"
+      }
     ]
   },
   {
-    "text": "Desktop"
+    "text": "new content only",
+    "entities": [
+      {
+        "id": "trl"
+      }
+    ]
   },
   {
-    "text": "Mobile"
+    "text": ["team size is not restricted", "(but the prize pool is)"],
+    "entities": [
+      {
+        "id": "trl"
+      }
+    ]
   },
   {
-    "text": "Server"
+    "text": ["use the main theme", "you will be judged on this"],
+    "entities": [
+      {
+        "id": "trl"
+      }
+    ]
   },
   {
-    "text": ["WebXR"]
+    "text": ["there are several categories", "your game can join one or more"],
+    "entities": [
+      {
+        "id": "trl"
+      }
+    ]
   },
   {
-    "text": "Web Monetization"
+    "text": "Desktop",
+    "entities": [
+      {
+        "id": "trl"
+      }
+    ]
   },
   {
-    "text": "Decentralized"
+    "text": "Mobile",
+    "entities": [
+      {
+        "id": "trl"
+      }
+    ]
+  },
+  {
+    "text": "Server",
+    "entities": [
+      {
+        "id": "trl"
+      }
+    ]
+  },
+  {
+    "text": ["WebXR"],
+    "entities": [
+      {
+        "id": "trl"
+      }
+    ]
+  },
+  {
+    "text": "Web Monetization",
+    "entities": [
+      {
+        "id": "trl"
+      }
+    ]
+  },
+  {
+    "text": "Decentralized",
+    "entities": [
+      {
+        "id": "trl"
+      }
+    ]
   },
   {
     "text": ["13 JULY 2022 13:13 CEST", "LET'S JOIN THE COMPETITION!1!11!!"],
@@ -90,10 +162,34 @@
     "haloColor": [0, 0, 0, 1]
   },
   {
-    "text": ["Hmmmm... now what?"]
+    "text": ["Hmmmm... now what?"],
+    "entities": [
+      {
+        "id": "trl"
+      }
+    ]
   },
   {
     "text": ["13 JULY 2022 13:15 CEST", "Some more research..."],
     "background": ["#F19A13", "#E74043", "#982A7C", "#00A0E3"]
+  },
+  {
+    "text": ["You join the js13k slack and ask:"],
+    "entities": [
+      {
+        "id": "trl"
+      }
+    ]
+  },
+  {
+    "text": [
+      "you: help, where do I start",
+      "xem: just create a blank index.html!",
+      "rik: or use a template repository",
+      "     to get you rolling!"
+    ],
+    "textAlignment": "Left",
+    "textColor": [0, 1, 0, 1],
+    "haloColor": [0, 0, 0, 1]
   }
 ]
