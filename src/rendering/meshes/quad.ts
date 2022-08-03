@@ -17,20 +17,10 @@ export class Quad extends Mesh {
       p3 = [-1, 1, 0],
       p4 = [1, 1, 0],
     } = options;
-    this.setVertices([p1, p2, p3, p4]);
-    this.setTriangles([0, 1, 2, 1, 3, 2]);
-    // this.setUvs([
-    //   [0, 1],
-    //   [1, 1],
-    //   [0, 0],
-    //   [1, 0],
-    // ]);
-    this.setColors([
-      [1, 0, 0, 1],
-      [0, 1, 0, 1],
-      [0, 0, 1, 1],
-      [1, 0, 1, 1],
-    ]);
+    this.setVertices(p1, p2, p3, p4);
+    this.setTriangles(0, 1, 2, 1, 3, 2);
+    this.setUvs([0, 1], [1, 1], [0, 0], [1, 0]);
+    this.setColors([1, 0, 0, 1], [0, 1, 0, 1], [0, 0, 1, 1], [1, 0, 1, 1]);
     this.recalculateNormals();
   }
 }

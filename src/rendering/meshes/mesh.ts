@@ -19,22 +19,22 @@ export class Mesh {
     return this._vertices;
   }
 
-  public setVertices(value: Vector3[]) {
+  public setVertices(...value: Vector3[]) {
     this._vertices = value;
     this._verticesA = new Float32Array(value.flat());
   }
 
-  public setTriangles(value: number[]) {
+  public setTriangles(...value: number[]) {
     this._triangles = value;
     this._trianglesA = new Uint16Array(value);
   }
 
-  public setUvs(value: Vector2[]) {
+  public setUvs(...value: Vector2[]) {
     this._uvs = value;
     this._uvsA = new Float32Array(value.flat());
   }
 
-  public setColors(value: Vector4[]) {
+  public setColors(...value: Vector4[]) {
     this._colors = value;
     this._colorsA = new Float32Array(value.flat());
   }

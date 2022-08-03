@@ -11,15 +11,16 @@ export const defaultTextRendererOptions: TextRendererSettings = {
   halo: 0.64,
   angle: 0,
   gamma: 2,
-  textColor: [1, 1, 1, 1],
-  haloColor: [152 / 255, 42 / 255, 124 / 255, 1],
+  textColor: [0, 0, 0, 1],
+  //haloColor: [152 / 255, 42 / 255, 124 / 255, 1],
+  haloColor: [1, 1, 1, 1],
   fontFamily: '"JetBrainsMono Nerd Font", monospace',
   lineHeight: 1.2,
   letterSpacing: 0,
 };
 
 export const defaultRendererSettings: RendererSettings = {
-  clearColor: [0, 0, 0, 1],
+  clearColor: [1, 1, 1, 1],
   clearMask: GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT,
   resolution: [1920, 1080],
   antialias: true,

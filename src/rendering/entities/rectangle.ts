@@ -1,16 +1,16 @@
-import { rotate } from '../../math/matrix2d';
 import { DEGREE_TO_RADIAN } from '../../math/util';
 import { Vector2 } from '../../math/vector2';
 import { Degree, Radian } from '../../types';
 import { SquareMaterial } from '../materials/square-material';
+import { Mesh } from '../meshes/mesh';
 import { Quad } from '../meshes/quad';
 import { Entity } from './entity';
+import { Corner as CornerMesh } from '../meshes/corner';
 
-export class Rectangle extends Entity {
-  private _position: Vector2;
-  private _size: Vector2;
-  private _rotation: Radian;
-
+export class TwoDimensionalEntity extends Entity {
+  protected _position: Vector2;
+  protected _size: Vector2;
+  protected _rotation: Radian;
   constructor(
     gl: WebGL2RenderingContext,
     id: string,
@@ -18,8 +18,9 @@ export class Rectangle extends Entity {
     size: Vector2,
     rotation: Degree,
     isDynamic = false,
+    mesh: Mesh,
   ) {
-    super(gl, id, new Quad(), new SquareMaterial(gl), isDynamic);
+    super(gl, id, mesh, new SquareMaterial(gl), isDynamic);
     this._position = position;
     this._size = size;
     this._rotation = rotation * DEGREE_TO_RADIAN;
@@ -41,5 +42,30 @@ export class Rectangle extends Entity {
       clipY,
       1,
     ]);
+  }
+}
+
+export class Corner extends TwoDimensionalEntity {
+  constructor(
+    gl: WebGL2RenderingContext,
+    id: string,
+    position: Vector2,
+    size: Vector2,
+    rotation: Degree,
+    isDynamic = false,
+  ) {
+    super(gl, id, position, size, rotation, isDynamic, new CornerMesh());
+  }
+}
+export class Rectangle extends TwoDimensionalEntity {
+  constructor(
+    gl: WebGL2RenderingContext,
+    id: string,
+    position: Vector2,
+    size: Vector2,
+    rotation: Degree,
+    isDynamic = false,
+  ) {
+    super(gl, id, position, size, rotation, isDynamic, new Quad());
   }
 }

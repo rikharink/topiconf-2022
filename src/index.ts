@@ -9,7 +9,7 @@ import { EntityDescription, Line, Slide } from './types';
 import { hexToRgb } from './math/color';
 import { Entity } from './rendering/entities/entity';
 import { EntityStore } from './rendering/entities/entity-store';
-import { Rectangle } from './rendering/entities/rectangle';
+import { Corner, Rectangle } from './rendering/entities/rectangle';
 
 const renderer = new WebGL2Renderer({});
 document.body.appendChild(renderer.gl.canvas);
@@ -18,6 +18,7 @@ const entities = new EntityStore();
 entities.register(
   new Rectangle(renderer.gl, 'trl', [0, 0], [100, 35], 0),
   new Rectangle(renderer.gl, 'trd', [0, 0], [100, 35], 0),
+  new Corner(renderer.gl, 'tc', [0, 0], [100, 35], 0),
 );
 
 state.game = new Game(getSlides(), renderer);
