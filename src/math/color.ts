@@ -3,7 +3,6 @@ import {
   RgbColor,
   HslColor,
   RgbaColor,
-  NormalizedRgbaColor,
   NormalizedRgbColor,
 } from '../types';
 

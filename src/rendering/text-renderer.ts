@@ -66,7 +66,7 @@ import { Scene, TextAlignment } from '../game/scene';
 
 const INF = 1e20;
 const SUPPORTED_CHARS =
-  'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-=_+[]{}\\|;:\'",.<>/?`~‽ ';
+  'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-=_+[]{}\\|;:\'",.<>/?`~‽¿¡♥（＾∀＾●）ﾉｼ^̮^(ღ˘⌣˘ღ)(｡◕‿◕｡)(¬_¬)“”― ';
 
 interface Glyph {
   data: Uint8ClampedArray;
@@ -183,6 +183,14 @@ export class TextRenderer {
     gl.activeTexture(GL_TEXTURE0);
   }
 
+  private _calculateScale(
+    line: Line,
+    fontsize: number,
+    defaultScale: number,
+  ): number {
+    return (line.scale ?? defaultScale) / fontsize;
+  }
+
   private _drawText(
     gl: WebGL2RenderingContext,
     lines: Line[],
@@ -198,38 +206,44 @@ export class TextRenderer {
     const height = this._tinySdf.glyphHeight;
     const bx = 0;
     const by = fontsize / 2 + buf;
-    const scale = size / fontsize;
     const lineHeight =
       settings.rendererSettings.textRendererSettings.lineHeight;
     const letterSpacing =
       settings.rendererSettings.textRendererSettings.letterSpacing;
+    const defaultScale = size / fontsize;
     const lineWidths = lines.map((line) =>
       line.text
         .split('')
         .reduce(
           (acc, c) =>
-            acc + this._tinySdf.sdfs[c].glyphAdvance * scale + letterSpacing,
+            acc +
+            this._tinySdf.sdfs[c].glyphAdvance *
+              this._calculateScale(line, fontsize, size) +
+            letterSpacing,
           0,
         ),
     );
     const maxWidth = Math.max.apply(null, lineWidths);
     const textHeight = lines
-      .map(() => scale * fontsize * lineHeight)
+      .map(
+        (l) => this._calculateScale(l, fontsize, size) * fontsize * lineHeight,
+      )
       .reduce((a, b) => a + b);
     const canvasHeight = gl.canvas.height;
     const canvasWidth = gl.canvas.width;
     const baseX = canvasWidth * 0.5;
     const baseY = canvasHeight * 0.5 - textHeight * 0.5;
 
+    let previousScale = defaultScale;
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
-      const lineScale = scale;
+      const lineScale = this._calculateScale(line, fontsize, size);
       const lineWidth = lineWidths[i];
       const baseWidth =
         textAlignment === TextAlignment.Center ? lineWidth : maxWidth;
       const pen = {
         x: baseX - baseWidth * 0.5,
-        y: baseY + i * fontsize * lineScale * lineHeight,
+        y: baseY + i * fontsize * previousScale * lineHeight,
       };
       const baseChar = this._tinySdf.sdfs['M'];
       for (let i = 0; i < line.text.length; i++) {
@@ -283,8 +297,8 @@ export class TextRenderer {
         );
         pen.x = pen.x + current.glyphAdvance * lineScale + letterSpacing;
       }
+      previousScale = lineScale;
     }
-
     gl.bindBuffer(GL_ARRAY_BUFFER, this._vertexBuffer);
     gl.bufferData(
       GL_ARRAY_BUFFER,
@@ -315,10 +329,7 @@ export class TextRenderer {
       this.isSdfDirty = false;
     }
 
-    const scale =
-      settings.rendererSettings.textRendererSettings.scale *
-      (window.devicePixelRatio / 2);
-
+    const scale = settings.rendererSettings.textRendererSettings.scale;
     const buffer = settings.rendererSettings.textRendererSettings.halo;
     const angle = settings.rendererSettings.textRendererSettings.angle;
     const gamma = settings.rendererSettings.textRendererSettings.gamma;

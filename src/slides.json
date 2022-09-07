@@ -2,7 +2,9 @@
   {
     "text": [
       { "text": "So you want to build a tiny game?" },
-      { "text": "a fictitious js13k game jam journey", "scale": 80 }
+      { "text": "a fictitious js13k game jam journey", "scale": 58 },
+      { "text": "" },
+      { "text": "[CLICK TO START]" }
     ],
     "background": ["#F19A13", "#E74043", "#982A7C", "#00A0E3"]
   },
@@ -15,63 +17,124 @@
     "background": ["#F19A13", "#E74043", "#982A7C", "#00A0E3"]
   },
   {
-    "text": [
-      "OKAY BUT WHAT IS JS13K?",
-      "you start reading https://js13kgames.com"
-    ]
+    "text": ["OKAY BUT WHAT IS JS13K?"],
+    "textColor": [0.906, 0.251, 0.263, 1]
   },
   {
     "text": [
-      "IT'S A GAME JAM FOR HTML5 GAME DEVELOPERS!!!",
-      "With a size restriction twist‽‽‽"
-    ]
+      "A GAME JAM FOR HTML5 GAME DEVELOPERS???",
+      "WITH A SIZE RESTRICTION TWIST‽‽‽‽‽‽‽‽‽",
+      "-._.-._.-WhAt DoEs ThIs AlL MeAn-._.-._.-"
+    ],
+    "textColor": [0.906, 0.251, 0.263, 1]
   },
   {
-    "text": ["TELL ME MORE!"]
+    "text": ["Please calm down,", "I'll explain it to you..."],
+    "textAlignment": "Left",
+    "textColor": [0, 0.627, 0.89, 1]
+  },
+  {
+    "text": ["¿¿¿WHO IS THIS???", "¡¡¡WHAT VOICE AM I HEARING!!!"],
+    "textColor": [0.906, 0.251, 0.263, 1]
+  },
+  {
+    "text": ["(¬_¬)..."],
+    "textAlignment": "Left",
+    "textColor": [0, 0.627, 0.89, 1]
+  },
+  {
+    "text": "Oh...",
+    "textColor": [0.906, 0.251, 0.263, 1]
+  },
+  {
+    "text": "Sorry...",
+    "textColor": [0.906, 0.251, 0.263, 1]
+  },
+  {
+    "text": ["I got a bit carried away..."],
+    "textColor": [0.906, 0.251, 0.263, 1]
+  },
+  {
+    "text": "I'll calm down...",
+    "textColor": [0.906, 0.251, 0.263, 1]
+  },
+  {
+    "text": ["BUT DO TELL ME MORE!"],
+    "textColor": [0.906, 0.251, 0.263, 1]
   },
   {
     "text": [
-      "package size <= 13 KiB",
-      "(13 * 1024 bytes)",
-      "no external resources allowed"
-    ]
+      "Hi I'm Rik                （＾∀＾●）ﾉｼ ",
+      "I love making stuff        (ღ˘⌣˘ღ)",
+      "Mostly fun computer stuff  (｡◕‿◕｡)"
+    ],
+    "textAlignment": "Left",
+    "textColor": [0, 0.627, 0.89, 1]
   },
   {
-    "text": ["has to run in", "the latest Firefox and Chrome"]
+    "text": ["e-mail: rik@har.ink", "github: @rikharink"],
+    "textAlignment": "Left",
+    "textColor": [0, 0.627, 0.89, 1]
   },
   {
-    "text": "new content only"
+    "text": [
+      "I meant about the JS13K game jam,",
+      "like how to build tiny games and stuff,",
+      "but nice to meet you"
+    ],
+    "textColor": [0.906, 0.251, 0.263, 1]
   },
   {
-    "text": ["team size is not restricted", "(but the prize pool is)"]
+    "text": "First the basics",
+    "textColor": [0, 0.627, 0.89, 1]
   },
   {
-    "text": ["use the main theme", "you will be judged on this"]
+    "text": ["package size <= 13 KiB", "(13 * 1024 bytes)"],
+    "textColor": [0, 0.627, 0.89, 1]
   },
   {
-    "text": ["there are several categories", "your game can join one or more"]
+    "text": ["has to run in", "the latest Firefox and Chrome"],
+    "textColor": [0, 0.627, 0.89, 1]
   },
   {
-    "text": "Desktop"
+    "text": "new content only",
+    "textColor": [0, 0.627, 0.89, 1]
   },
   {
-    "text": "Mobile"
+    "text": [
+      "use the main theme",
+      "(announced at the start of the jam)",
+      "you will be judged on this"
+    ],
+    "textColor": [0, 0.627, 0.89, 1]
   },
   {
-    "text": "Server"
+    "text": ["team size is not restricted", "(the prize pool is)"],
+    "textColor": [0, 0.627, 0.89, 1]
   },
   {
-    "text": ["WebXR"]
+    "text": ["there are several categories", "games can join more than one"],
+    "textColor": [0, 0.627, 0.89, 1]
   },
   {
-    "text": "Web Monetization"
-  },
-  {
-    "text": "Decentralized"
-  },
-  {
-    "text": ["13 JULY 2022 13:13 CEST", "LET'S JOIN THE COMPETITION!1!11!!"],
+    "text": [
+      { "text": "13 JULY 2022 13:13 CEST" },
+      { "text": "LET'S PREPARE" }
+    ],
     "background": ["#F19A13", "#E74043", "#982A7C", "#00A0E3"]
+  },
+  {
+    "text": [
+      { "text": "“he who is best prepared" },
+      { "text": " can best serve his moment" },
+      { "text": " of inspiration”" },
+      { "text": "" },
+      { "text": "― Samuel Taylor Coleridge", "scale": 58 }
+    ],
+    "textAlignment": "Left",
+    "background": ["#F19A13"],
+    "textColor": [1, 1, 1, 1],
+    "haloColor": [0, 0, 0, 1]
   },
   {
     "text": [
@@ -88,25 +151,16 @@
     "background": ["#000000"]
   },
   {
-    "text": ["Hmmmm... now what?"]
-  },
-  {
-    "text": ["13 JULY 2022 13:15 CEST", "Some more research..."],
-    "background": ["#F19A13", "#E74043", "#982A7C", "#00A0E3"]
-  },
-  {
-    "text": ["You join the js13k slack and ask:"]
+    "text": ["Hmmmm... now what?"],
+    "textColor": [0.906, 0.251, 0.263, 1]
   },
   {
     "text": [
-      "> you: help, where do I start",
-      "> xem: just create a blank index.html!",
-      "> rik: or use a template repository",
-      "       to get you on the road rolling!"
+      "13 JULY 2022 13:15 CEST",
+      "CHAPTER 1:",
+      "On how to start building",
+      "a tiny game"
     ],
-    "textAlignment": "Left",
-    "textColor": [0, 1, 0, 1],
-    "haloColor": [0, 0, 0, 1],
-    "background": ["#000000"]
+    "background": ["#F19A13", "#E74043", "#982A7C", "#00A0E3"]
   }
 ]

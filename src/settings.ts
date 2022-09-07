@@ -7,7 +7,7 @@ import { RendererSettings } from './rendering/renderer-settings';
 import { TextRendererSettings } from './rendering/text-renderer';
 
 export const defaultTextRendererOptions: TextRendererSettings = {
-  scale: 128,
+  scale: 76,
   halo: 0.64,
   angle: 0,
   gamma: 2,

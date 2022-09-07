@@ -12,6 +12,7 @@ body {
 canvas {
   width: 100vw;
   outline: 0;
+  cursor:  none;
 }
 
 .no-aa {
