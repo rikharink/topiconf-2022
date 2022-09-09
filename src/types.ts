@@ -29,10 +29,11 @@ export type EntityDescription = {
 export type Line = {
   text: string;
   scale?: number;
+  relativeScale?: number;
 };
 
 export type Slide = {
-  text: string | string[] | Line[];
+  text: string | (string | Line)[];
   textAlignment?: TextAlignment;
   textColor?: NormalizedRgbaColor;
   haloColor?: NormalizedRgbaColor;

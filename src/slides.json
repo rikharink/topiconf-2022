@@ -1,16 +1,16 @@
 [
   {
     "text": [
-      { "text": "So you want to build a tiny game?" },
-      { "text": "a fictitious js13k game jam journey", "scale": 58 },
-      { "text": "" },
-      { "text": "[CLICK TO START]" }
+      "So you want to build a tiny game?",
+      { "text": "a fictitious js13k game jam journey", "relativeScale": 0.8 },
+      "",
+      "[CLICK TO START]"
     ],
     "background": ["#F19A13", "#E74043", "#982A7C", "#00A0E3"]
   },
   {
     "text": [
-      "13 JULY 2022 13:00 CEST",
+      { "text": "13 JULY 2022 13:00 CEST", "relativeScale": 1.2 },
       "you hear about a game jam called js13k",
       "it starts in exactly one month"
     ],
@@ -64,7 +64,7 @@
   },
   {
     "text": [
-      "Hi I'm Rik                （＾∀＾●）ﾉｼ ",
+      "Hi, I'm Rik               （＾∀＾●）ﾉｼ ",
       "I love making stuff        (ღ˘⌣˘ღ)",
       "Mostly fun computer stuff  (｡◕‿◕｡)"
     ],
@@ -85,7 +85,12 @@
     "textColor": [0.906, 0.251, 0.263, 1]
   },
   {
-    "text": "First the basics",
+    "text": [
+      "Oh, of course",
+      "let's start with the basics",
+      "",
+      { "text": "THE RULES", "relativeScale": 1.5 }
+    ],
     "textColor": [0, 0.627, 0.89, 1]
   },
   {
@@ -118,21 +123,34 @@
   },
   {
     "text": [
-      { "text": "13 JULY 2022 13:13 CEST" },
-      { "text": "LET'S PREPARE" }
+      { "text": "13 JULY 2022 13:13 CEST", "relativeScale": 1.2 },
+      "LET'S PREPARE"
     ],
     "background": ["#F19A13", "#E74043", "#982A7C", "#00A0E3"]
   },
   {
     "text": [
-      { "text": "“he who is best prepared" },
-      { "text": " can best serve his moment" },
-      { "text": " of inspiration”" },
-      { "text": "" },
-      { "text": "― Samuel Taylor Coleridge", "scale": 58 }
+      "“He who is best prepared",
+      " can best serve his moment",
+      " of inspiration.”",
+      "",
+      { "text": "― Samuel Taylor Coleridge", "relativeScale": 0.8 }
     ],
     "textAlignment": "Left",
-    "background": ["#F19A13"],
+    "background": ["#00A0E3"],
+    "textColor": [1, 1, 1, 1],
+    "haloColor": [0, 0, 0, 1]
+  },
+  {
+    "text": [
+      "“Why not seize the pleasure at once?",
+      " How often is happiness destroyed",
+      " by preparation, foolish preparation!”",
+      "",
+      { "text": "― Jane Austen, Emma", "relativeScale": 0.8 }
+    ],
+    "textAlignment": "Left",
+    "background": ["#E74043"],
     "textColor": [1, 1, 1, 1],
     "haloColor": [0, 0, 0, 1]
   },
@@ -143,7 +161,7 @@
       "$ git init",
       "$ npm init",
       "$ gi Node > .gitignore",
-      "$ git commit -am \"it starts...\""
+      "$ git commit -am \"let's build a tiny game!\""
     ],
     "textAlignment": "Left",
     "textColor": [0, 1, 0, 1],
@@ -155,11 +173,14 @@
     "textColor": [0.906, 0.251, 0.263, 1]
   },
   {
+    "text": ["Let's get ourselves a canvas", "and build the game loop!"],
+    "textColor": [0, 0.627, 0.89, 1]
+  },
+  {
     "text": [
-      "13 JULY 2022 13:15 CEST",
-      "CHAPTER 1:",
-      "On how to start building",
-      "a tiny game"
+      { "text": "13 JULY 2022 13:15 CEST", "relativeScale": 1.2 },
+      "you start building",
+      "a tiny game framework"
     ],
     "background": ["#F19A13", "#E74043", "#982A7C", "#00A0E3"]
   }

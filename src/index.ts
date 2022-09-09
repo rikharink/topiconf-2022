@@ -28,18 +28,9 @@ if (process.env.NODE_ENV === 'development') {
   showDebugGUI();
 }
 
-function getText(text: string | string[] | Line[]): Line[] {
+function getText(text: string | (string | Line)[]): Line[] {
   if (Array.isArray(text)) {
-    if (text.length === 0) return [];
-    if (typeof text[0] === 'object') {
-      return text as Line[];
-    } else {
-      return (text as string[]).map((t) => {
-        return {
-          text: t,
-        };
-      });
-    }
+    return text.map((l) => (typeof l == 'object' ? l : { text: l }));
   }
   return [{ text: text }];
 }

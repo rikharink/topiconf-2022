@@ -188,7 +188,9 @@ export class TextRenderer {
     fontsize: number,
     defaultScale: number,
   ): number {
-    return (line.scale ?? defaultScale) / fontsize;
+    return (
+      ((line.scale ?? defaultScale) / fontsize) * (line.relativeScale ?? 1)
+    );
   }
 
   private _drawText(
