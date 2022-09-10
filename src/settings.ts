@@ -6,6 +6,11 @@ import {
 import { RendererSettings } from './rendering/renderer-settings';
 import { TextRendererSettings } from './rendering/text-renderer';
 
+export const yellow = '#F19A13';
+export const red = '#E74043';
+export const purple = '#982A7C';
+export const blue = '#00A0E3';
+
 export const defaultTextRendererOptions: TextRendererSettings = {
   scale: 76,
   halo: 0.64,
@@ -33,7 +38,9 @@ export const defaultDebugSettings: DebugSettings = {
 };
 
 const settings = {
-  dt: 10,
+  dt: 5,
+  gravity: [0, 1000],
+  flapVelocity: 500,
   rendererSettings: defaultRendererSettings,
   debugSettings: defaultDebugSettings,
 };

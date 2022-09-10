@@ -149,6 +149,13 @@ export function hexToRgb(hex: string): RgbColor {
   throw new Error('Bad Hex');
 }
 
+export function rgbToHex(color: RgbColor): string {
+  const r = color[0].toString(16).padStart(2, '0');
+  const g = color[1].toString(16).padStart(2, '0');
+  const b = color[2].toString(16).padStart(2, '0');
+  return `#${r}${g}${b}`;
+}
+
 export function hexToNormalizedRgb(hex: string): NormalizedRgbColor {
   return normalizeRgb(hexToRgb(hex));
 }

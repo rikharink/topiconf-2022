@@ -12,7 +12,13 @@ body {
 canvas {
   width: 100vw;
   outline: 0;
-  cursor:  none;
+  cursor: none;
+}
+
+#c {
+  position: absolute;
+  z-index: 1000;
+  pointer-events: none;
 }
 
 .no-aa {

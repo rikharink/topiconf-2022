@@ -16,7 +16,18 @@ async function showDebugGUI() {
     return;
   }
   const gameControls = controls.addFolder('game');
-  gameControls.add(settings, 'dt', 10, 100, 1);
+  gameControls.add(settings, 'dt', 1, 1000, 1);
+  gameControls.add(settings, 'flapVelocity', 0, 10000, 100);
+  gameControls.add(settings, 'gravity', [
+    [0, 1000],
+    [0, -1000],
+    [1000, 0],
+    [-1000, 0],
+    [1000, 1000],
+    [-1000, -1000],
+    [1000, -1000],
+    [-1000, 1000],
+  ]);
 
   const markDirty = function () {
     state.game!.renderer.text_renderer.isDirty = true;

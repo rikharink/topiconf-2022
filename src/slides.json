@@ -160,7 +160,10 @@
       "$ cd js13k-2022",
       "$ git init",
       "$ npm init",
-      "$ gi Node > .gitignore",
+      "$ mkdir src",
+      "$ touch src/index.html",
+      "$ touch src/index.ts",
+      "$ touch src/style.css",
       "$ git commit -am \"let's build a tiny game!\""
     ],
     "textAlignment": "Left",
@@ -173,15 +176,157 @@
     "textColor": [0.906, 0.251, 0.263, 1]
   },
   {
-    "text": ["Let's get ourselves a canvas", "and build the game loop!"],
-    "textColor": [0, 0.627, 0.89, 1]
-  },
-  {
     "text": [
       { "text": "13 JULY 2022 13:15 CEST", "relativeScale": 1.2 },
       "you start building",
       "a tiny game framework"
     ],
     "background": ["#F19A13", "#E74043", "#982A7C", "#00A0E3"]
+  },
+  {
+    "text": ["Let's setup", "a canvas to draw on"],
+    "textColor": [0, 0.627, 0.89, 1]
+  },
+  {
+    "text": [
+      {
+        "text": "<canvas id='g' width=1280 height=720></canvas>",
+        "relativeScale": 0.5
+      }
+    ],
+    "canvasSceneId": "c1"
+  },
+  {
+    "text": [
+      {
+        "text": "const canvas = document.getElementById('g');",
+        "relativeScale": 0.5
+      },
+      {
+        "text": "const ctx = canvas.getContext('2d');",
+        "relativeScale": 0.5
+      },
+      {
+        "text": "ctx.fillStyle = '#F19A13';",
+        "relativeScale": 0.5
+      },
+      {
+        "text": "ctx.fillRect(p.pos[0], p.pos[1], p.size[0], p.size[1]);",
+        "relativeScale": 0.5
+      }
+    ],
+    "textAlignment": "Left",
+    "canvasSceneId": "c2"
+  },
+  {
+    "text": ["Now we'll setup the game loop"],
+    "textColor": [0, 0.627, 0.89, 1]
+  },
+  {
+    "text": [
+      {
+        "text": "let dt = 5;",
+        "relativeScale": 0.5
+      },
+      {
+        "text": "let then = 0; let accumulator = 0;",
+        "relativeScale": 0.5
+      },
+      {
+        "text": "let raf = requestAnimationFrame(loop);",
+        "relativeScale": 0.5
+      },
+      { "text": "", "relativeScale": 0.5 },
+      { "text": "function loop(now: number) {", "relativeScale": 0.5 },
+      { "text": "  raf = requestAnimationFrame(loop);", "relativeScale": 0.5 },
+      { "text": "  let ft = now - then;", "relativeScale": 0.5 },
+      { "text": "  if(ft > 1000) {", "relativeScale": 0.5 },
+      { "text": "    then = now; return;", "relativeScale": 0.5 },
+      { "text": "  }", "relativeScale": 0.5 },
+      { "text": "  accumulator += ft;", "relativeScale": 0.5 },
+      { "text": "  while(accumulator >= dt) {", "relativeScale": 0.5 },
+      { "text": "    //DO FIXED STEP STUFF", "relativeScale": 0.5 },
+      { "text": "    doPhysics(dt)", "relativeScale": 0.5 },
+      { "text": "    accumulator -= dt;", "relativeScale": 0.5 },
+      { "text": "  }", "relativeScale": 0.5 },
+      { "text": "  let t = accumulator / dt;", "relativeScale": 0.5 },
+      { "text": "  //DO VARIABLE STEP STUFF", "relativeScale": 0.5 },
+      { "text": "  render(t);", "relativeScale": 0.5 },
+      { "text": "}", "relativeScale": 0.5 }
+    ],
+    "textAlignment": "Left"
+  },
+  {
+    "text": [
+      "Okay now I'll sprinkle on some",
+      "❇❇❇ SEMI-IMPLICIT EULER ❇❇❇",
+      "for some awesome",
+      "❇❇❇ PHYSICS ❇❇❇"
+    ],
+    "textColor": [0, 0.627, 0.89, 1]
+  },
+  {
+    "text": [
+      {
+        "text": "function doPhysics(dt: number) {",
+        "relativeScale": 0.4
+      },
+      {
+        "text": "  p.acceleration = GRAVITY",
+        "relativeScale": 0.4
+      },
+      {
+        "text": "  let acceleration = scale([0, 0], p.acceleration, dt);",
+        "relativeScale": 0.4
+      },
+      {
+        "text": "  add(p.velocity, p.velocity, acceleration);",
+        "relativeScale": 0.4
+      },
+      {
+        "text": "  add(p.pos, p.pos, scale([0, 0], po.velocity, dt));",
+        "relativeScale": 0.4
+      },
+      {
+        "text": "}",
+        "relativeScale": 0.4
+      }
+    ],
+    "textAlignment": "Left",
+    "canvasSceneId": "c3"
+  },
+  {
+    "text": ["Whoops forgot to implement collisions", "let's fix that..."],
+    "textColor": [0, 0.627, 0.89, 1]
+  },
+  {
+    "text": [
+      {
+        "text": "function doPhysics(dt: number) {",
+        "relativeScale": 0.4
+      },
+      {
+        "text": "  p.acceleration = GRAVITY;",
+        "relativeScale": 0.4
+      },
+      {
+        "text": "  p.velocity = add(p.velocity, scale(p.acceleration, dt));",
+        "relativeScale": 0.4
+      },
+      {
+        "text": "  p.pos = add(p.pos, scale(po.velocity, dt));",
+        "relativeScale": 0.4
+      },
+      {
+        "text": "  doCollisions();",
+        "relativeScale": 0.4
+      },
+      {
+        "text": "}",
+        "relativeScale": 0.4
+      }
+    ],
+    "textAlignment": "Left",
+    "canvasSceneId": "c4"
   }
 ]

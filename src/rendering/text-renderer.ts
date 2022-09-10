@@ -62,11 +62,12 @@ import {
 } from './gl-constants';
 import settings from '../settings';
 import { Line, NormalizedRgbaColor, Radian } from '../types';
-import { Scene, TextAlignment } from '../game/scene';
+import { Scene, TextAlignment, TextVerticalAlignment } from '../game/scene';
+import { Vector2 } from '../math/vector2';
 
 const INF = 1e20;
 const SUPPORTED_CHARS =
-  'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-=_+[]{}\\|;:\'",.<>/?`~‽¿¡♥（＾∀＾●）ﾉｼ^̮^(ღ˘⌣˘ღ)(｡◕‿◕｡)(¬_¬)“”― ';
+  'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-=_+[]{}\\|;:\'",.<>/?`~‽¿¡♥（＾∀＾●）ﾉｼ^̮^(ღ˘⌣˘ღ)(｡◕‿◕｡)(¬_¬)“”―❇ ';
 
 interface Glyph {
   data: Uint8ClampedArray;
@@ -197,7 +198,9 @@ export class TextRenderer {
     gl: WebGL2RenderingContext,
     lines: Line[],
     textAlignment: TextAlignment,
+    textVerticalAlignment: TextVerticalAlignment,
     size: number,
+    secondCanvasPosition?: Vector2,
   ) {
     const vertexElements = [];
     const textureElements = [];
@@ -221,7 +224,8 @@ export class TextRenderer {
             acc +
             this._tinySdf.sdfs[c].glyphAdvance *
               this._calculateScale(line, fontsize, size) +
-            letterSpacing,
+            letterSpacing +
+            buf * 2 * (line.relativeScale ?? 1),
           0,
         ),
     );
@@ -234,8 +238,12 @@ export class TextRenderer {
     const canvasHeight = gl.canvas.height;
     const canvasWidth = gl.canvas.width;
     const baseX = canvasWidth * 0.5;
-    const baseY = canvasHeight * 0.5 - textHeight * 0.5;
-
+    const minY = secondCanvasPosition ? secondCanvasPosition[1] : 280;
+    const baseY =
+      textVerticalAlignment === TextVerticalAlignment.Center &&
+      !secondCanvasPosition
+        ? canvasHeight * 0.5 - textHeight * 0.5
+        : 0.5 * minY - 0.5 * textHeight;
     let previousScale = defaultScale;
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
@@ -318,7 +326,11 @@ export class TextRenderer {
     this._textureBuffer.numItems = textureElements.length / 2;
   }
 
-  public render(gl: WebGL2RenderingContext, scene: Scene) {
+  public render(
+    gl: WebGL2RenderingContext,
+    scene: Scene,
+    secondCanvasPosition?: Vector2,
+  ) {
     if (!scene.text) {
       return;
     }
@@ -345,7 +357,14 @@ export class TextRenderer {
     );
 
     if (this.isDirty) {
-      this._drawText(gl, scene.text, scene.textAlignment, scale);
+      this._drawText(
+        gl,
+        scene.text,
+        scene.textAlignment,
+        scene.textVerticalAlignment,
+        scale,
+        secondCanvasPosition,
+      );
       this.isDirty = false;
     }
 

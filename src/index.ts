@@ -10,9 +10,12 @@ import { hexToRgb } from './math/color';
 import { Entity } from './rendering/entities/entity';
 import { EntityStore } from './rendering/entities/entity-store';
 import { Corner, Rectangle } from './rendering/entities/rectangle';
+import { CanvasRenderer } from './rendering/canvas-renderer';
 
 const renderer = new WebGL2Renderer({});
+const canvasRenderer = new CanvasRenderer();
 document.body.appendChild(renderer.gl.canvas);
+document.body.appendChild(canvasRenderer.canvas);
 
 const entities = new EntityStore();
 entities.register(
@@ -21,7 +24,8 @@ entities.register(
   new Corner(renderer.gl, 'tc', [0, 0], [100, 35], 0),
 );
 
-state.game = new Game(getSlides(), renderer);
+const scenes: Scene[] = getScenes();
+state.game = new Game(scenes[0], scenes, renderer, canvasRenderer);
 state.game.start();
 
 if (process.env.NODE_ENV === 'development') {
@@ -44,7 +48,8 @@ function getEntity(e: EntityDescription): Entity {
   return entity;
 }
 
-function getSlides(): Scene {
+function getScenes(): Scene[] {
+  const scenes: Scene[] = [];
   const ls = slides as Slide[];
   const bg = ls[0].background;
   const first: Slide = slides[0] as Slide;
@@ -52,21 +57,28 @@ function getSlides(): Scene {
     renderer.gl,
     getText(first.text),
     first.textAlignment,
+    first.textVerticalAlignment,
     first.textColor,
     first.haloColor,
     bg?.map(hexToRgb),
     first.entities?.map(getEntity),
+    undefined,
+    first.canvasSceneId,
   );
   let p = r;
+  scenes.push(r);
   for (const s of ls.slice(1)) {
     p = p.addNext(
       getText(s.text),
       s.textAlignment,
+      s.textVerticalAlignment,
       s.textColor,
       s.haloColor,
       s.background?.map(hexToRgb),
       s.entities?.map(getEntity),
+      s.canvasSceneId,
     );
+    scenes.push(p);
   }
-  return r;
+  return scenes;
 }

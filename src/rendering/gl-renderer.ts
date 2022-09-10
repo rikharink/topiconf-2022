@@ -26,6 +26,7 @@ import {
 import { Camera } from './camera/camera';
 import { RgbaColor } from '../types';
 import { arrayEquals } from '../util';
+import { Vector2 } from '../math/vector2';
 
 export class WebGL2Renderer {
   public gl: WebGL2RenderingContext;
@@ -111,7 +112,10 @@ export class WebGL2Renderer {
     gl.clear(settings.rendererSettings.clearMask | GL_DEPTH_BUFFER_BIT);
     this._renderBackground(gl, scene);
     this._renderEntities(gl, scene, camera);
-    this._renderText(gl, scene);
+  }
+
+  public renderText(scene: Scene, secondCanvasPosition?: Vector2) {
+    this._renderText(this.gl, scene, secondCanvasPosition);
   }
 
   private _renderBackground(gl: WebGL2RenderingContext, scene: Scene) {
@@ -144,7 +148,11 @@ export class WebGL2Renderer {
     });
   }
 
-  private _renderText(gl: WebGL2RenderingContext, scene: Scene) {
-    this.text_renderer.render(gl, scene);
+  private _renderText(
+    gl: WebGL2RenderingContext,
+    scene: Scene,
+    secondCanvasPosition?: Vector2,
+  ) {
+    this.text_renderer.render(gl, scene, secondCanvasPosition);
   }
 }

@@ -1,4 +1,4 @@
-import { TextAlignment } from './game/scene';
+import { TextAlignment, TextVerticalAlignment } from './game/scene';
 import { Vector2 } from './math/vector2';
 import { Vector3 } from './math/vector3';
 
@@ -35,8 +35,10 @@ export type Line = {
 export type Slide = {
   text: string | (string | Line)[];
   textAlignment?: TextAlignment;
+  textVerticalAlignment?: TextVerticalAlignment;
   textColor?: NormalizedRgbaColor;
   haloColor?: NormalizedRgbaColor;
   background?: string[];
   entities?: EntityDescription[];
+  canvasSceneId?: string;
 };

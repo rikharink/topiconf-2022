@@ -135,7 +135,7 @@ export function bezier(
 export function perpendicular(
   out: Vector2,
   dxdy: Vector2,
-  clockwise: boolean = true,
+  clockwise = true,
 ): Vector2 {
   out[0] = dxdy[1];
   out[1] = dxdy[0];
