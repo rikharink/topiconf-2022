@@ -149,19 +149,9 @@ export class Game {
       this._setCurrentScene(this.currentScene.previous);
     }
 
-    //TODO: make to be controlled by the canvas scene instead of here
     if (this.currentCanvasScene?.player) {
-      if (this._input.hasKeyDown('d')) {
-        this.currentCanvasScene.right(this.currentCanvasScene);
-      }
-      if (this._input.hasKeyDown('a')) {
-        this.currentCanvasScene.left(this.currentCanvasScene);
-      }
-      if (this._input.hasKeyUp('w')) {
+      if (this._input.hasKeyUp(' ')) {
         this.currentCanvasScene.up(this.currentCanvasScene);
-      }
-      if (this._input.hasKeyUp('s')) {
-        this.currentCanvasScene.down(this.currentCanvasScene);
       }
     }
 
