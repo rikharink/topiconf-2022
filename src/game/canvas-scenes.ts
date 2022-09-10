@@ -60,7 +60,13 @@ function defaultUpdateTick(c: CanvasScene, dt: number): void {
 
 function defaultUp(scene: CanvasScene) {
   if (!scene.player) return;
-  scene.player.velocity[1] = -settings.flapVelocity;
+  if (settings.gravity[1] !== 0) {
+    scene.player.velocity[1] =
+      Math.sign(-settings.gravity[1]) * settings.flapVelocity;
+  } else if (settings.gravity[0] !== 0) {
+    scene.player.velocity[0] =
+      Math.sign(-settings.gravity[0]) * settings.flapVelocity;
+  }
 }
 
 function defaultDown(scene: CanvasScene) {
