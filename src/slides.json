@@ -24,7 +24,7 @@
     "text": [
       "A GAME JAM FOR HTML5 GAME DEVELOPERS???",
       "WITH A SIZE RESTRICTION TWIST‽‽‽‽‽‽‽‽‽",
-      "-._.-._.-WhAt DoEs ThIs AlL MeAn-._.-._.-"
+      "_.-._.-WhAt DoEs ThIs AlL MeAn-._.-._"
     ],
     "textColor": [0.906, 0.251, 0.263, 1]
   },
@@ -78,8 +78,9 @@
   },
   {
     "text": [
-      "I meant about the JS13K game jam,",
+      "I meant about the JS13K game jam...",
       "like how to build tiny games and stuff,",
+      "",
       "but nice to meet you"
     ],
     "textColor": [0.906, 0.251, 0.263, 1]
@@ -98,11 +99,14 @@
     "textColor": [0, 0.627, 0.89, 1]
   },
   {
-    "text": ["has to run in", "the latest Firefox and Chrome"],
+    "text": [
+      "has to be a webgame that runs in",
+      "the latest Firefox and Chrome"
+    ],
     "textColor": [0, 0.627, 0.89, 1]
   },
   {
-    "text": "new content only",
+    "text": ["game should be new", "engine/framework can be pre-existing"],
     "textColor": [0, 0.627, 0.89, 1]
   },
   {
@@ -200,26 +204,41 @@
     "text": [
       {
         "text": "const canvas = document.getElementById('g');",
-        "relativeScale": 0.5
+        "relativeScale": 0.4
       },
       {
         "text": "const ctx = canvas.getContext('2d');",
-        "relativeScale": 0.5
+        "relativeScale": 0.4
       },
       {
-        "text": "ctx.fillStyle = '#F19A13';",
-        "relativeScale": 0.5
+        "text": "ctx.fillStyle = '#F19A13'; ctx.strokeStyle = '#000000'",
+        "relativeScale": 0.4
       },
       {
-        "text": "ctx.fillRect(p.pos[0], p.pos[1], p.size[0], p.size[1]);",
-        "relativeScale": 0.5
+        "text": "ctx.lineWidth = 2;",
+        "relativeScale": 0.4
+      },
+      {
+        "text": "ctx.beginPath();",
+        "relativeScale": 0.4
+      },
+      {
+        "text": "ctx.rect(p.pos[0], p.pos[1], p.size[0], p.size[1]);",
+        "relativeScale": 0.4
+      },
+      {
+        "text": "ctx.fill(); ctx.stroke();",
+        "relativeScale": 0.4
       }
     ],
     "textAlignment": "Left",
     "canvasSceneId": "c2"
   },
   {
-    "text": ["Now we'll setup the game loop"],
+    "text": [
+      "Now we'll setup the game loop",
+      "⚠ WARNING WALL OF CODE INCOMING ⚠"
+    ],
     "textColor": [0, 0.627, 0.89, 1]
   },
   {
@@ -258,7 +277,7 @@
   },
   {
     "text": [
-      "Okay now I'll sprinkle on some",
+      "Okay now we'll sprinkle on some",
       "❇❇❇ SEMI-IMPLICIT EULER ❇❇❇",
       "for some awesome",
       "❇❇❇ PHYSICS ❇❇❇"
@@ -276,7 +295,7 @@
         "relativeScale": 0.4
       },
       {
-        "text": "  let acceleration = scale([0, 0], p.acceleration, dt);",
+        "text": "  let acceleration = scale(p.acceleration, dt);",
         "relativeScale": 0.4
       },
       {
@@ -284,7 +303,7 @@
         "relativeScale": 0.4
       },
       {
-        "text": "  add(p.pos, p.pos, scale([0, 0], po.velocity, dt));",
+        "text": "  add(p.pos, p.pos, scale(po.velocity, dt));",
         "relativeScale": 0.4
       },
       {
@@ -330,7 +349,52 @@
     "canvasSceneId": "c4"
   },
   {
-    "text": ["THE MIGHTY FLAPPY SQUARE OF DEATH"],
+    "text": ["let's add some interactivity", "⬆ so we can jump for joy ⬆"],
+    "textColor": [0, 0.627, 0.89, 1]
+  },
+  {
+    "text": [
+      { "text": "// press space to jump for joy", "relativeScale": 0.5 },
+      { "text": "if(inputManager.hasKeyUp(' ')) {", "relativeScale": 0.5 },
+      { "text": "  p.velocity[1] = UP_VELOCITY;", "relativeScale": 0.5 },
+      { "text": "}", "relativeScale": 0.5 }
+    ],
+    "textAlignment": "Left",
+    "canvasSceneId": "c4"
+  },
+  {
+    "text": ["Oops we have infinite jumps,", "well we'll deal with that later"],
+    "textColor": [0, 0.627, 0.89, 1]
+  },
+  {
+    "text": ["are we done yet", "with the prepartion?"],
+    "textColor": [0.906, 0.251, 0.263, 1]
+  },
+  {
+    "text": [
+      { "text": "13 AUGUST 2022 13:00 CEST", "relativeScale": 1.2 },
+      "theme anouncement",
+      "start of the JS13k GAME JAM"
+    ],
+    "background": ["#F19A13", "#E74043", "#982A7C", "#00A0E3"]
+  },
+  {
+    "text": ["and the theme is..."],
+    "textColor": [0, 0.627, 0.89, 1]
+  },
+  {
+    "text": [{ "text": "☠ DEATH ☠", "relativeScale": 2 }],
+    "background": ["#000000"],
+    "textColor": [1, 1, 1, 1],
+    "haloColor": [0.906, 0.251, 0.263, 1],
+    "angle": 0.45
+  },
+  {
+    "text": ["Bit heavy,", "but let's brainstorm!"],
+    "textColor": [0, 0.627, 0.89, 1]
+  },
+  {
+    "text": ["The Mighty Flappy Square", "☠ OF DEATH ☠"],
     "canvasSceneId": "FLAPPYSQUARE"
   }
 ]

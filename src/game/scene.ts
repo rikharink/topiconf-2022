@@ -23,6 +23,7 @@ export class Scene {
   public haloColor?: NormalizedRgbaColor;
   public root?: Entity[];
   public canvasSceneId?: string;
+  public angle?: number;
   private _bg_colors?: RgbColor[];
   private _bg_texture?: WebGLTexture;
   private _gl: WebGL2RenderingContext;
@@ -53,6 +54,7 @@ export class Scene {
     entities?: Entity[],
     previous?: Scene,
     canvasSceneId?: string,
+    angle?: number,
   ) {
     this._gl = gl;
     this.text = text;
@@ -64,6 +66,7 @@ export class Scene {
     this.bg_colors = background;
     this.previous = previous;
     this.canvasSceneId = canvasSceneId;
+    this.angle = angle;
   }
 
   public addNext(
@@ -75,6 +78,7 @@ export class Scene {
     background?: RgbColor[],
     entities?: Entity[],
     canvasSceneId?: string,
+    angle?: number,
   ): Scene {
     const child = new Scene(
       this._gl,
@@ -87,6 +91,7 @@ export class Scene {
       entities,
       this,
       canvasSceneId,
+      angle,
     );
     child.id = this.id + 1;
     this.next = child;

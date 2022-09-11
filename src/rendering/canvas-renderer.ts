@@ -40,7 +40,9 @@ export class CanvasRenderer {
       this._renderPipe(scene, pipe);
     }
     this._renderPlayer(scene);
-    this._renderScore(scene);
+    if (scene.shouldRenderScore) {
+      this._renderScore(scene);
+    }
   }
 
   private _renderPipe(scene: CanvasScene, pipe: Pipe) {

@@ -41,4 +41,5 @@ export type Slide = {
   background?: string[];
   entities?: EntityDescription[];
   canvasSceneId?: string;
+  angle?: number;
 };

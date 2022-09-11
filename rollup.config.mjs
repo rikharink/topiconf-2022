@@ -34,7 +34,7 @@ if (isDev) {
 
 const plugins = [
   html2({
-    title: 'TopiConf 2022',
+    title: "TopiConf 2022 - Let's build a tiny game!",
     template: join('src', 'index.html'),
     minify: false,
     externals: {

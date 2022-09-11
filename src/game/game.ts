@@ -150,10 +150,8 @@ export class Game {
       this._setCurrentScene(this.currentScene.previous);
     }
 
-    if (this.currentCanvasScene?.player) {
-      if (this._input.hasKeyUp(' ')) {
-        this.currentCanvasScene.flap(this.currentCanvasScene);
-      }
+    if (this._input.hasKeyUp(' ')) {
+      this.currentCanvasScene?.player?.flap(this.currentCanvasScene);
     }
 
     this._input.tick();

@@ -11,7 +11,6 @@ export type CanvasMovementFunction = (scene: CanvasScene) => void;
 export interface CanvasScene {
   id: string;
   updateTick: CanvasUpdateTick;
-  flap: CanvasMovementFunction;
   bg: string;
   size: Vector2;
   position: Vector2;
@@ -23,6 +22,7 @@ export interface CanvasScene {
   gravity: Vector2;
   flapVelocity: number;
   score: number;
+  shouldRenderScore: boolean;
 }
 
 export interface PhysicsObject {
@@ -43,6 +43,8 @@ export interface Player extends PhysicsObject {
   color: string;
   rotation: Radian;
   isDead: boolean;
+  flap: CanvasMovementFunction;
+  fitness: number;
 }
 
 function interpolatePlayer(
@@ -53,6 +55,7 @@ function interpolatePlayer(
   if (!start) return end;
   if (!end) return start;
   return {
+    ...end,
     pos: vlerp([0, 0], start.pos, end.pos, t),
     size: vlerp([0, 0], start.size, end.size, t),
     acceleration: vlerp([0, 0], start.acceleration, end.acceleration, t),
@@ -61,7 +64,6 @@ function interpolatePlayer(
       v3lerp([0, 0, 0], hexToRgb(start.color), hexToRgb(end.color), t),
     ),
     rotation: lerp(start.rotation, end.rotation, t),
-    isDead: end.isDead,
   };
 }
 
@@ -116,7 +118,9 @@ export function interpolateCanvasScene(
 export function cloneCanvasScene(s: CanvasScene): CanvasScene {
   const c: CanvasScene = JSON.parse(JSON.stringify(s));
   c.updateTick = s.updateTick;
-  c.flap = s.flap;
+  if (s.player) {
+    c.player!.flap = s.player.flap;
+  }
   return c;
 }
 

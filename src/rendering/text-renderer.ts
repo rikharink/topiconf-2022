@@ -67,7 +67,7 @@ import { Vector2 } from '../math/vector2';
 
 const INF = 1e20;
 const SUPPORTED_CHARS =
-  'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-=_+[]{}\\|;:\'",.<>/?`~‽¿¡♥（＾∀＾●）ﾉｼ^̮^(ღ˘⌣˘ღ)(｡◕‿◕｡)(¬_¬)“”―❇ ';
+  'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-=_+[]{}\\|;:\'",.<>/?`~‽¿¡♥（＾∀＾●）ﾉｼ^̮^(ღ˘⌣˘ღ)(｡◕‿◕｡)(¬_¬)“”―❇⬆⚠☠ ';
 
 interface Glyph {
   data: Uint8ClampedArray;
@@ -345,7 +345,8 @@ export class TextRenderer {
 
     const scale = settings.rendererSettings.textRendererSettings.scale;
     const buffer = settings.rendererSettings.textRendererSettings.halo;
-    const angle = settings.rendererSettings.textRendererSettings.angle;
+    const angle =
+      scene.angle ?? settings.rendererSettings.textRendererSettings.angle;
     const gamma = settings.rendererSettings.textRendererSettings.gamma;
 
     this._shader.enable(gl);

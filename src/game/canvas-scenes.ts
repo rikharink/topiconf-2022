@@ -132,6 +132,7 @@ function noPipesUpdateTick(c: CanvasScene, dt: number): void {
 let previousNextPipe: Pipe | undefined = undefined;
 function defaultUpdateTick(c: CanvasScene, dt: number): void {
   if (!c.player || !c.hasStarted) return;
+  c.player.fitness++;
   c.player.acceleration = [c.gravity[0], c.gravity[1]];
   physicsTick(c.player, dt);
   pipeTick(c);
@@ -166,7 +167,6 @@ function getDefaultScene(): CanvasScene {
   return {
     id: `c${currentId++}`,
     updateTick: defaultUpdateTick,
-    flap: defaultUp,
     bg: blue,
     size: size,
     position: position,
@@ -177,6 +177,7 @@ function getDefaultScene(): CanvasScene {
     gravity: <Vector2>settings.gravity,
     flapVelocity: settings.flapVelocity,
     score: 0,
+    shouldRenderScore: true,
   };
 }
 
@@ -190,6 +191,7 @@ function getDefaultPlayer(
   const pos = subtract([0, 0], halfScreenSize, halfSize);
   add(pos, pos, screenPosition);
   return {
+    flap: defaultUp,
     pos: pos,
     size: [50, 50],
     acceleration: [0, 0],
@@ -197,6 +199,7 @@ function getDefaultPlayer(
     color: yellow,
     rotation: 0,
     isDead: false,
+    fitness: 0,
   };
 }
 
@@ -204,22 +207,26 @@ const scenes: CanvasScene[] = [
   {
     ...getDefaultScene(),
     player: undefined,
+    shouldRenderScore: false,
   },
   {
     ...getDefaultScene(),
     updateTick: noopUpdateTick,
+    shouldRenderScore: false,
   },
   {
     ...getDefaultScene(),
     updateTick: outOfBoundsTick,
     gravity: [0, 500],
     flapVelocity: 250,
+    shouldRenderScore: false,
   },
   {
     ...getDefaultScene(),
     updateTick: noPipesUpdateTick,
     gravity: [0, 1000],
     flapVelocity: 500,
+    shouldRenderScore: false,
   },
   {
     ...getDefaultScene(),
