@@ -328,5 +328,9 @@
     ],
     "textAlignment": "Left",
     "canvasSceneId": "c4"
+  },
+  {
+    "text": ["THE MIGHTY FLAPPY SQUARE OF DEATH"],
+    "canvasSceneId": "FLAPPYSQUARE"
   }
 ]

@@ -1,4 +1,5 @@
 import { TAU } from '../math/util';
+import { Vector2 } from '../math/vector2';
 import settings from '../settings';
 import state from '../state';
 
@@ -17,17 +18,30 @@ async function showDebugGUI() {
   }
   const gameControls = controls.addFolder('game');
   gameControls.add(settings, 'dt', 1, 1000, 1);
-  gameControls.add(settings, 'flapVelocity', 0, 10000, 100);
-  gameControls.add(settings, 'gravity', [
-    [0, 1000],
-    [0, -1000],
-    [1000, 0],
-    [-1000, 0],
-    [1000, 1000],
-    [-1000, -1000],
-    [1000, -1000],
-    [-1000, 1000],
-  ]);
+  const fv = gameControls.add(settings, 'flapVelocity', 0, 10000, 100);
+  fv.onChange((v: number) => {
+    if (state.game?.currentCanvasScene) {
+      state.game.currentCanvasScene.flapVelocity = v;
+    }
+  });
+
+  const gravity = {
+    gravityX: settings.gravity[0],
+    gravityY: settings.gravity[1],
+  };
+
+  const gx = gameControls.add(gravity, 'gravityX', -5000, 5000);
+  gx.onChange((x: number) => {
+    if (state.game?.currentCanvasScene) {
+      state.game.currentCanvasScene.gravity[0] = x;
+    }
+  });
+  const gy = gameControls.add(gravity, 'gravityY', -5000, 5000);
+  gy.onChange((y: number) => {
+    if (state.game?.currentCanvasScene) {
+      state.game.currentCanvasScene.gravity[1] = y;
+    }
+  });
 
   const markDirty = function () {
     state.game!.renderer.text_renderer.isDirty = true;

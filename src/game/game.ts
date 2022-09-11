@@ -27,6 +27,7 @@ export class Game {
   public renderer: WebGL2Renderer;
   public canvasRenderer: CanvasRenderer;
   private _previousCanvasScene?: CanvasScene;
+
   scenes: Scene[];
 
   constructor(
@@ -151,7 +152,7 @@ export class Game {
 
     if (this.currentCanvasScene?.player) {
       if (this._input.hasKeyUp(' ')) {
-        this.currentCanvasScene.up(this.currentCanvasScene);
+        this.currentCanvasScene.flap(this.currentCanvasScene);
       }
     }
 

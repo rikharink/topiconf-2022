@@ -1,4 +1,5 @@
 import { DebugSettings } from './debug/gui';
+import { getRandom } from './math/random';
 import {
   GL_COLOR_BUFFER_BIT,
   GL_DEPTH_BUFFER_BIT,
@@ -39,8 +40,14 @@ export const defaultDebugSettings: DebugSettings = {
 
 const settings = {
   dt: 5,
-  gravity: [0, 1000],
-  flapVelocity: 500,
+  gravity: [0, 5000],
+  flapVelocity: 1000,
+  pipeWidth: 100,
+  pipeOpeningSize: 200,
+  minPipeHeight: 100,
+  pipeMovementspeed: 2,
+  pipeSpawnPercentage: 0.65,
+  rng: getRandom('TOPICONF2022'),
   rendererSettings: defaultRendererSettings,
   debugSettings: defaultDebugSettings,
 };
