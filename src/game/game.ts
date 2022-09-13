@@ -154,6 +154,12 @@ export class Game {
       this.currentCanvasScene?.player?.flap(this.currentCanvasScene);
     }
 
+    if (this._input.hasKeyUp('r') && this.currentCanvasScene) {
+      this.currentCanvasScene = this._getCanvasSceneById(
+        this.currentCanvasScene.id,
+      );
+    }
+
     this._input.tick();
   }
 

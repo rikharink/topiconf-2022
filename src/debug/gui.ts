@@ -1,5 +1,4 @@
 import { TAU } from '../math/util';
-import { Vector2 } from '../math/vector2';
 import settings from '../settings';
 import state from '../state';
 
@@ -25,21 +24,30 @@ async function showDebugGUI() {
     }
   });
 
-  const gravity = {
+  const mockState = {
     gravityX: settings.gravity[0],
     gravityY: settings.gravity[1],
+    killPlayer: state.game?.currentCanvasScene?.killPlayer ?? true,
   };
 
-  const gx = gameControls.add(gravity, 'gravityX', -5000, 5000);
+  const gx = gameControls.add(mockState, 'gravityX', -5000, 5000);
   gx.onChange((x: number) => {
     if (state.game?.currentCanvasScene) {
       state.game.currentCanvasScene.gravity[0] = x;
     }
   });
-  const gy = gameControls.add(gravity, 'gravityY', -5000, 5000);
+  const gy = gameControls.add(mockState, 'gravityY', -5000, 5000);
   gy.onChange((y: number) => {
     if (state.game?.currentCanvasScene) {
       state.game.currentCanvasScene.gravity[1] = y;
+    }
+  });
+
+  const killPlayer = gameControls.add(mockState, 'killPlayer');
+  killPlayer.onChange((s: boolean) => {
+    if (state.game?.currentCanvasScene) {
+      console.log('Make immortal ', !s);
+      state.game.currentCanvasScene.killPlayer = s;
     }
   });
 

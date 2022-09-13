@@ -493,12 +493,23 @@
   },
   {
     "text": [
+      "Awesome bundling tools",
+      "- Rollup",
+      "- Terser",
+      "- Roadroller",
+      "- Efficient Compression Tool"
+    ],
+    "textAlignment": "Left",
+    "textColor": [0, 0.627, 0.89, 1]
+  },
+  {
+    "text": [
       {
         "text": "So to reiterate",
         "relativeScale": 0.6
       },
       {
-        "text": "MY RECIPE FOR BULDING A TINY GAME:",
+        "text": "MY RECIPE FOR AN AWESOME TINY GAME JAM:",
         "relativeScale": 0.75
       }
     ],

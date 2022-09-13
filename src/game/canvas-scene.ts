@@ -23,6 +23,7 @@ export interface CanvasScene {
   flapVelocity: number;
   score: number;
   shouldRenderScore: boolean;
+  killPlayer: boolean;
 }
 
 export interface PhysicsObject {

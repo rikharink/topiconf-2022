@@ -17,7 +17,7 @@ function physicsTick(po: PhysicsObject, dt: number) {
   add(po.pos, po.pos, scale([0, 0], po.velocity, dt));
 }
 
-function boundsCheck(c: CanvasScene, killPlayer = true) {
+function boundsCheck(c: CanvasScene) {
   if (!c.player) return;
 
   const top = c.position[1];
@@ -35,7 +35,7 @@ function boundsCheck(c: CanvasScene, killPlayer = true) {
     c.player.acceleration[1] = 0;
     c.player.velocity[1] = 0;
     c.player.pos[1] = bottom;
-    if (killPlayer) {
+    if (c.killPlayer) {
       c.player.isDead = true;
     }
   }
@@ -55,7 +55,7 @@ function boundsCheck(c: CanvasScene, killPlayer = true) {
   if (hasPipeCollision(c)) {
     c.player.acceleration = [0, 0];
     c.player.velocity = [0, 0];
-    if (killPlayer) {
+    if (c.killPlayer) {
       c.player.isDead = true;
     }
   }
@@ -126,7 +126,7 @@ function noPipesUpdateTick(c: CanvasScene, dt: number): void {
   if (!c.player) return;
   c.player.acceleration = [c.gravity[0], c.gravity[1]];
   physicsTick(c.player, dt);
-  boundsCheck(c, false);
+  boundsCheck(c);
 }
 
 let previousNextPipe: Pipe | undefined = undefined;
@@ -178,6 +178,7 @@ function getDefaultScene(): CanvasScene {
     flapVelocity: settings.flapVelocity,
     score: 0,
     shouldRenderScore: true,
+    killPlayer: true,
   };
 }
 
@@ -208,11 +209,13 @@ const scenes: CanvasScene[] = [
     ...getDefaultScene(),
     player: undefined,
     shouldRenderScore: false,
+    killPlayer: false,
   },
   {
     ...getDefaultScene(),
     updateTick: noopUpdateTick,
     shouldRenderScore: false,
+    killPlayer: false,
   },
   {
     ...getDefaultScene(),
@@ -220,6 +223,7 @@ const scenes: CanvasScene[] = [
     gravity: [0, 500],
     flapVelocity: 250,
     shouldRenderScore: false,
+    killPlayer: false,
   },
   {
     ...getDefaultScene(),
@@ -227,6 +231,7 @@ const scenes: CanvasScene[] = [
     gravity: [0, 1000],
     flapVelocity: 500,
     shouldRenderScore: false,
+    killPlayer: false,
   },
   {
     ...getDefaultScene(),
