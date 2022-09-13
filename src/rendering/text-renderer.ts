@@ -337,8 +337,15 @@ export class TextRenderer {
 
     gl.bindVertexArray(this._vao);
 
-    if (this.isSdfDirty) {
-      this._tinySdf.updateSdf();
+    if (
+      this.isSdfDirty ||
+      (scene.font ??
+        settings.rendererSettings.textRendererSettings.fontFamily) !==
+        this._tinySdf.fontFamily
+    ) {
+      this._tinySdf.updateSdf(
+        scene.font ?? settings.rendererSettings.textRendererSettings.fontFamily,
+      );
       this._updateSDFTexture(gl);
       this.isSdfDirty = false;
     }
@@ -426,6 +433,7 @@ class TinySDF {
 
   public ctx: CanvasRenderingContext2D;
   public sdfs: SDFDictionary = {};
+  public fontFamily: string;
   public fontSize: number;
   public glyphWidth: number;
   public glyphHeight: number;
@@ -443,6 +451,7 @@ class TinySDF {
     this._buffer = buffer;
     this._cutoff = cutoff;
     this._radius = radius;
+    this.fontFamily = fontFamily;
     this.fontSize = fontSize;
     this._fontWeight = fontWeight;
     this._fontStyle = fontStyle;
@@ -455,11 +464,7 @@ class TinySDF {
     const glyphCtx = (this._glyphCtx = canvas.getContext('2d', {
       willReadFrequently: true,
     })!);
-    glyphCtx.font = `${fontStyle} ${fontWeight} ${fontSize}px ${fontFamily}`;
-    glyphCtx.textBaseline = 'alphabetic';
-    glyphCtx.textAlign = 'left'; // Necessary so that RTL text doesn't have different alignment
-    glyphCtx.fillStyle = 'black';
-
+    this.updateFont();
     const canvas2 = document.createElement('canvas');
     const totalWidth = glyphCtx.canvas.width * SUPPORTED_CHARS.length;
     const rows = Math.ceil(totalWidth / 1000);
@@ -479,9 +484,17 @@ class TinySDF {
     this._updateSDF();
   }
 
-  public updateSdf() {
-    this._glyphCtx.font = `${this._fontStyle} ${this._fontWeight} ${this.fontSize}px ${settings.rendererSettings.textRendererSettings.fontFamily}`;
+  public updateSdf(fontFamily: string) {
+    this.fontFamily = fontFamily;
+    this._glyphCtx.font = `${this._fontStyle} ${this._fontWeight} ${this.fontSize}px ${fontFamily}`;
     this._updateSDF();
+  }
+
+  public updateFont() {
+    this._glyphCtx.font = `${this._fontStyle} ${this._fontWeight} ${this.fontSize}px ${this.fontFamily}`;
+    this._glyphCtx.textBaseline = 'alphabetic';
+    this._glyphCtx.textAlign = 'left'; // Necessary so that RTL text doesn't have different alignment
+    this._glyphCtx.fillStyle = 'black';
   }
 
   private _createCanvas(size: number): HTMLCanvasElement {

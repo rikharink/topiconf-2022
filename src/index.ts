@@ -65,6 +65,7 @@ function getScenes(): Scene[] {
     undefined,
     first.canvasSceneId,
     first.angle,
+    first.font,
   );
   let p = r;
   scenes.push(r);
@@ -79,6 +80,7 @@ function getScenes(): Scene[] {
       s.entities?.map(getEntity),
       s.canvasSceneId,
       s.angle,
+      s.font,
     );
     scenes.push(p);
   }

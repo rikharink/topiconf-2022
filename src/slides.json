@@ -372,6 +372,16 @@
   },
   {
     "text": [
+      { "text": "One", "relativeScale": 2 },
+      { "text": "Eternity", "relativeScale": 2 },
+      { "text": "Later", "relativeScale": 2 }
+    ],
+    "font": "\"Some Time Later\", \"Comic Mono\", \"Comic Sans MS\",  \"JetBrainsMono Nerd Font\", monospace",
+    "textColor": [0.047, 0.192, 0.357, 1],
+    "background": ["#fdfc61", "#fbd108", "#a4d00d"]
+  },
+  {
+    "text": [
       { "text": "13 AUGUST 2022 13:00 CEST", "relativeScale": 1.2 },
       "theme anouncement",
       "start of the JS13k GAME JAM"
@@ -394,7 +404,343 @@
     "textColor": [0, 0.627, 0.89, 1]
   },
   {
+    "text": [
+      {
+        "text": "pitch me a game about a flappy square of death",
+        "relativeScale": 0.6
+      },
+      {
+        "text": "",
+        "relativeScale": 0.5
+      },
+      {
+        "text": "“A flappy square of death game would be a great game",
+        "relativeScale": 0.5
+      },
+      {
+        "text": " for people who love challenging themselves.",
+        "relativeScale": 0.5
+      },
+      {
+        "text": " The objective of the game would be to navigate the square",
+        "relativeScale": 0.5
+      },
+      {
+        "text": " through an increasingly difficult series of obstacles,",
+        "relativeScale": 0.5
+      },
+      {
+        "text": " with the ultimate goal of reaching the finish line alive”",
+        "relativeScale": 0.5
+      },
+      {
+        "text": "",
+        "relativeScale": 0.5
+      },
+      { "text": " ― GPT-3", "relativeScale": 0.6 }
+    ],
+    "textAlignment": "Left",
+    "background": ["#982A7C"],
+    "textColor": [1, 1, 1, 1],
+    "haloColor": [0, 0, 0, 1]
+  },
+  {
+    "text": [
+      { "text": "15 AUGUST 2022 13:37 CEST", "relativeScale": 1.2 },
+      "building the core gameplay loop"
+    ],
+    "background": ["#F19A13", "#E74043", "#982A7C", "#00A0E3"]
+  },
+  {
     "text": ["The Mighty Flappy Square", "☠ OF DEATH ☠"],
-    "canvasSceneId": "FLAPPYSQUARE"
+    "canvasSceneId": "FLAPPYSQUARE",
+    "font": "\"Comic Mono\", \"Comic Sans MS\",  \"JetBrainsMono Nerd Font\", monospace"
+  },
+  {
+    "text": [
+      "Awesome debug tools:",
+      "",
+      "- lil-gui",
+      "- stats.js",
+      "- spector.js (WebGL)"
+    ],
+    "textAlignment": "Left",
+    "textColor": [0, 0.627, 0.89, 1]
+  },
+  {
+    "text": [
+      { "text": "22 AUGUST 2022 18:24 CEST", "relativeScale": 1.2 },
+      "iterate and juice",
+      "(and some more debugging)"
+    ],
+    "background": ["#F19A13", "#E74043", "#982A7C", "#00A0E3"]
+  },
+  {
+    "text": [
+      { "text": "10 SEPTEMBER 2022 19:41 CEST", "relativeScale": 1.2 },
+      "Final testing",
+      "(and some more bug fixing)"
+    ],
+    "background": ["#F19A13", "#E74043", "#982A7C", "#00A0E3"]
+  },
+  {
+    "text": [
+      { "text": "13 SEPTEMBER 2022 11:11 CEST", "relativeScale": 1.2 },
+      "Bundle & Ship It",
+      "(you finished a game!)"
+    ],
+    "background": ["#F19A13", "#E74043", "#982A7C", "#00A0E3"]
+  },
+  {
+    "text": [
+      {
+        "text": "So to reiterate",
+        "relativeScale": 0.6
+      },
+      {
+        "text": "MY RECIPE FOR BULDING A TINY GAME:",
+        "relativeScale": 0.75
+      }
+    ],
+    "textColor": [0, 0.627, 0.89, 1]
+  },
+  {
+    "text": [
+      {
+        "text": "1. PREPARE",
+        "relativeScale": 0.75
+      },
+      {
+        "text": "   pick a framework",
+        "relativeScale": 0.75
+      },
+      {
+        "text": "   or build your own",
+        "relativeScale": 0.75
+      }
+    ],
+    "textColor": [0, 0.627, 0.89, 1],
+    "textAlignment": "Left"
+  },
+  {
+    "text": [
+      {
+        "text": "2. BRAINSTORM",
+        "relativeScale": 0.75
+      },
+      {
+        "text": "   brainstorm game ideas",
+        "relativeScale": 0.75
+      },
+      {
+        "text": "   paper prototype",
+        "relativeScale": 0.75
+      },
+      {
+        "text": "   keep it to one core mechanic",
+        "relativeScale": 0.75
+      }
+    ],
+    "textColor": [0, 0.627, 0.89, 1],
+    "textAlignment": "Left"
+  },
+  {
+    "text": [
+      {
+        "text": "3. CORE GAMEPLAY LOOP",
+        "relativeScale": 0.75
+      },
+      {
+        "text": "   build the core gameplay loop",
+        "relativeScale": 0.75
+      },
+      {
+        "text": "   make it fun",
+        "relativeScale": 0.75
+      },
+      {
+        "text": "   keep it simple!",
+        "relativeScale": 0.75
+      }
+    ],
+    "textColor": [0, 0.627, 0.89, 1],
+    "textAlignment": "Left"
+  },
+  {
+    "text": [
+      {
+        "text": "4. ITERATE & JUICE",
+        "relativeScale": 0.75
+      },
+      {
+        "text": "   add secundary gameplay mechanics",
+        "relativeScale": 0.75
+      },
+      {
+        "text": "   sound and music",
+        "relativeScale": 0.75
+      },
+      {
+        "text": "   SCREENSHAKE or other juicy effects",
+        "relativeScale": 0.75
+      },
+      {
+        "text": "   achievements, unlockables, high scores, etc",
+        "relativeScale": 0.75
+      }
+    ],
+    "textColor": [0, 0.627, 0.89, 1],
+    "textAlignment": "Left"
+  },
+  {
+    "text": [
+      {
+        "text": "5. FINAL PLAYTEST",
+        "relativeScale": 0.75
+      },
+      {
+        "text": "   actually, do this at every step",
+        "relativeScale": 0.75
+      },
+      {
+        "text": "   gather feedback from other people",
+        "relativeScale": 0.75
+      },
+      {
+        "text": "   (make use of the js13kgames slack!)",
+        "relativeScale": 0.75
+      }
+    ],
+    "textColor": [0, 0.627, 0.89, 1],
+    "textAlignment": "Left"
+  },
+  {
+    "text": [
+      {
+        "text": "6. BUNDLE & SHIP IT",
+        "relativeScale": 0.75
+      },
+      {
+        "text": "   put it in a zip",
+        "relativeScale": 0.75
+      },
+      {
+        "text": "   submit your game",
+        "relativeScale": 0.75
+      }
+    ],
+    "textColor": [0, 0.627, 0.89, 1],
+    "textAlignment": "Left"
+  },
+  {
+    "text": [
+      {
+        "text": "7. CELEBRATE, PLAY OTHER PEOPLES GAMES AND VOTE",
+        "relativeScale": 0.75
+      },
+      {
+        "text": "   you made a cool thing, be proud, celebrate!",
+        "relativeScale": 0.75
+      },
+      {
+        "text": "   play other peoples submissions",
+        "relativeScale": 0.75
+      },
+      {
+        "text": "   leave feedback and vote!",
+        "relativeScale": 0.75
+      }
+    ],
+    "textColor": [0, 0.627, 0.89, 1],
+    "textAlignment": "Left"
+  },
+  {
+    "text": [
+      "now go and build your own",
+      "TINY GAME",
+      "",
+      {
+        "text": "(and please show them to me if you do!)",
+        "relativeScale": 0.5
+      }
+    ],
+    "textColor": [0, 0.627, 0.89, 1]
+  },
+  {
+    "text": [
+      {
+        "text": "LINKDUMP",
+        "relativeScale": 0.6
+      },
+      {
+        "text": "",
+        "relativeScale": 0.5
+      },
+      {
+        "text": "https://github.com/rikharink/topiconf-2022",
+        "relativeScale": 0.5
+      },
+      {
+        "text": "https://rikharink.github.io/topiconf-2022",
+        "relativeScale": 0.5
+      },
+      {
+        "text": "",
+        "relativeScale": 0.5
+      },
+      {
+        "text": "https://js13kgames.com",
+        "relativeScale": 0.5
+      },
+      {
+        "text": "",
+        "relativeScale": 0.5
+      },
+      {
+        "text": "https://github.com/rikharink/js13k-boilerplate",
+        "relativeScale": 0.5
+      },
+      {
+        "text": "https://straker.github.io/kontra/",
+        "relativeScale": 0.5
+      },
+      {
+        "text": "https://github.com/KilledByAPixel/LittleJS",
+        "relativeScale": 0.5
+      },
+      {
+        "text": "https://xem.github.io/W/",
+        "relativeScale": 0.5
+      },
+      {
+        "text": "",
+        "relativeScale": 0.5
+      },
+      {
+        "text": "https://lil-gui.georgealways.com/",
+        "relativeScale": 0.5
+      },
+      {
+        "text": "https://github.com/mrdoob/stats.js/",
+        "relativeScale": 0.5
+      },
+      {
+        "text": "https://spector.babylonjs.com/",
+        "relativeScale": 0.5
+      },
+      {
+        "text": "",
+        "relativeScale": 0.5
+      },
+      {
+        "text": "https://lifthrasiir.github.io/roadroller/",
+        "relativeScale": 0.5
+      },
+      {
+        "text": "https://github.com/fhanau/Efficient-Compression-Tool",
+        "relativeScale": 0.5
+      }
+    ],
+    "textAlignment": "Left"
   }
 ]
