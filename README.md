@@ -1,6 +1,8 @@
 # Let's build a tiny game
 
-## Run, build, tweak develop
+[view slides](https://rikharink.github.io/topiconf-2022)
+
+## Run, build, tweak, develop...
 
 ### Development build
 
@@ -24,6 +26,7 @@ yarn build
   - [My JS13k boilerplate repo](https://github.com/rikharink/js13k-boilerplate)
   - [Kontra](https://straker.github.io/kontra/)
   - [LittleJS](https://github.com/KilledByAPixel/LittleJS)
+  - [Goodluck](https://github.com/piesku/goodluck)
   - [W](https://xem.github.io/W/)
 - Setup build tools
   - [Rollup.js](https://www.rollupjs.org/guide/en/)
