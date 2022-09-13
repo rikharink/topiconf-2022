@@ -81,6 +81,7 @@ You can learn a lot from this feedback, especially if the game is to hard (you w
 ### 6. Bundle & Ship-it
 
 Make your final zip, make sure it isn't bigger than 13KiB (maybe codegolf some more if it is!) and submit it!
+See bundle tools under preparation if you didn't do this in preparation.
 
 ### 7. Celebrate, play other peoples games and vote
 
