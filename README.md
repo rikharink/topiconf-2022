@@ -2,7 +2,7 @@
 
 [view slides](https://rikharink.github.io/topiconf-2022)
 
-## Run, build, tweak, develop...
+## Run, build, tweak, develop
 
 ### Development build
 
@@ -37,10 +37,13 @@ yarn build
   - [lil-gui](https://lil-gui.georgealways.com/)
   - [stats.js](https://github.com/mrdoob/stats.js/)
   - [spector.js](https://spector.babylonjs.com/)
-- Learn some Maths
+- Learn some Maths & Game physics
+  - [3d Math Primer for Graphics and Game Development](https://gamemath.com/book/intro.html)
   - [3 Blue 1 Brown - Essence of Linear Algebra](https://www.youtube.com/playlist?list=PL0-GT3co4r2y2YErbmuJw2L5tW4Ew2O5B)
   - [Freya Holmér - Math For Game Devs](https://www.youtube.com/playlist?list=PLImQaTpSAdsD88wprTConznD1OY1EfK_V)
   - [Freya Holmér - The Beauty of Bézier Curves](https://www.youtube.com/watch?v=aVwxzDHniEw)
+  - [Integration basics (game physics)](https://gafferongames.com/post/integration_basics/)
+  - [GMTK Platformer physics](https://www.youtube.com/watch?v=zWi0jgghGcI)
 
 ### 2. Brainstorm
 
@@ -53,6 +56,8 @@ yarn build
 ### 3. Core gameplay loop
 
 - Build the core gameplay loop
+- Maybe [Fix your Timestep](https://www.gafferongames.com/post/fix_your_timestep/)
+  - [or not]()
 - Keep it simple, pick one core mechanic make this fun
 - People will probably only play your game for about 5 minutes make these minutes count
 - People won't read your manual make your mechanic easy to pick up
