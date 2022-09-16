@@ -20,6 +20,8 @@ yarn build
 
 ## My 7 step recipe for an awesome game jam
 
+- [Play my 2021 entry](https://rikharink.github.io/js13k-2021-space)
+- [Look at my unfinished 2022 entry](https://github.com/rikharink/js13k-2022-death)
 ### 1. Prepare (pre-jam)
 
 - Pick or develop a framework
