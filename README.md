@@ -22,6 +22,7 @@ yarn build
 
 - [Play my 2021 entry](https://rikharink.github.io/js13k-2021-space)
 - [Look at my unfinished 2022 entry](https://github.com/rikharink/js13k-2022-death)
+  
 ### 1. Prepare (pre-jam)
 
 - Pick or develop a framework
