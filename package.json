@@ -39,7 +39,7 @@
     "prettier": "^2.7.1",
     "rimraf": "^3.0.2",
     "roadroller": "^2.1.0",
-    "rollup": "^2.79.0",
+    "rollup": "^2.79.1",
     "rollup-plugin-copy": "^3.4.0",
     "rollup-plugin-glsl-optimize": "^1.0.4",
     "rollup-plugin-html2": "^3.1.0",
