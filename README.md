@@ -1,5 +1,7 @@
 # Let's build a tiny game
 
+My presentation for TopiConf 2022 about the [js13k gamejam](https://js13kgames.com/)
+
 [view slides](https://rikharink.github.io/topiconf-2022)
 
 ## Run, build, tweak, develop
