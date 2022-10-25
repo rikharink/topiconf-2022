@@ -32,7 +32,7 @@
     "chalk": "^5.0.1",
     "cross-env": "^7.0.3",
     "ect-bin": "^1.4.1",
-    "eslint": "^8.23.1",
+    "eslint": "^8.26.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
     "html-minifier": "^4.0.0",
