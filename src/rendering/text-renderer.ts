@@ -461,18 +461,14 @@ class TinySDF {
     const size = (this._size = fontSize + buffer * 4);
     this.glyphWidth = this.glyphHeight = fontSize + buffer;
     const canvas = this._createCanvas(size);
-    const glyphCtx = (this._glyphCtx = canvas.getContext('2d', {
-      willReadFrequently: true,
-    })!);
+    const glyphCtx = (this._glyphCtx = canvas.getContext('2d')!);
     this.updateFont();
     const canvas2 = document.createElement('canvas');
     const totalWidth = glyphCtx.canvas.width * SUPPORTED_CHARS.length;
     const rows = Math.ceil(totalWidth / 1000);
     canvas2.width = settings.rendererSettings.resolution[0];
     canvas2.height = glyphCtx.canvas.height * rows;
-    this.ctx = canvas2.getContext('2d', {
-      willReadFrequently: true,
-    })!;
+    this.ctx = canvas2.getContext('2d')!;
 
     // temporary arrays for the distance transform
     this._gridOuter = new Float64Array(size * size);
